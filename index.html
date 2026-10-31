@@ -1,0 +1,732 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Cannoli">
+<meta name="theme-color" content="#F5F3EE" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#11151D" media="(prefers-color-scheme: dark)">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Cannoli Siciliani</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,500;0,6..96,700;1,6..96,500&family=Figtree:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: app de cozinha para iPhone. Cabeçalho fixo, conteúdo em uma coluna, abas embaixo.
+   Paleta da majólica siciliana: cobalto (véspera/noite), açafrão (dia), pistache (montagem). */
+:root{
+  --bg:#F5F3EE; --surface:#FFFFFF; --surface-2:#ECE9E1; --line:#DDD8CC; --fg:#1C2433; --muted:#676C76;
+  --accent:#2B4C9B; --accent-soft:#E2E7F4;
+  --p1:#2B4C9B; --p1s:#E2E7F4;
+  --p2:#B5760F; --p2s:#F7EAD0;
+  --p3:#5F7D26; --p3s:#E6EDD6;
+  --warn:#B3412E; --warn-s:#F6E0DA; --ok:#5F7D26;
+  --shadow:0 1px 2px rgba(28,36,51,.06),0 8px 24px rgba(28,36,51,.06);
+  --display:"Bodoni Moda","Didot","Bodoni 72",Georgia,serif;
+  --body:"Figtree",-apple-system,"SF Pro Text",system-ui,sans-serif;
+  --tab-h:58px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#11151D; --surface:#1A2030; --surface-2:#232A3B; --line:#2E3649; --fg:#EDEFF3; --muted:#9AA1AE;
+  --accent:#8EA6E6; --accent-soft:#222C47;
+  --p1:#8EA6E6; --p1s:#222C47; --p2:#E6AE4A; --p2s:#352A15; --p3:#A6C46C; --p3s:#253019;
+  --warn:#E88A76; --warn-s:#3A211C; --ok:#A6C46C;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25); color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#11151D; --surface:#1A2030; --surface-2:#232A3B; --line:#2E3649; --fg:#EDEFF3; --muted:#9AA1AE;
+  --accent:#8EA6E6; --accent-soft:#222C47;
+  --p1:#8EA6E6; --p1s:#222C47; --p2:#E6AE4A; --p2s:#352A15; --p3:#A6C46C; --p3s:#253019;
+  --warn:#E88A76; --warn-s:#3A211C; --ok:#A6C46C;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25); color-scheme:dark}
+
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.5;-webkit-tap-highlight-color:transparent}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--bg)}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
+h1,h2,h3{margin:0;text-wrap:balance}
+p{margin:0}
+.wrap{max-width:640px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+
+/* header */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--bg);border-bottom:1px solid var(--line)}
+.top .wrap{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-block:10px}
+.brand{display:flex;align-items:center;gap:10px;min-width:0}
+.brand svg{flex:none}
+.brand h1{font-family:var(--display);font-size:22px;font-weight:700;letter-spacing:-.2px;white-space:nowrap}
+.brand small{display:block;font-size:11px;letter-spacing:1.4px;text-transform:uppercase;color:var(--muted);margin-top:-2px}
+.portion-chip{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 12px;font-size:13px;font-weight:600;white-space:nowrap;display:flex;align-items:center;gap:6px}
+.portion-chip i{font-style:normal;color:var(--muted);font-weight:500}
+
+main{padding-bottom:calc(var(--tab-h) + env(safe-area-inset-bottom,0px) + 90px)}
+.view{display:flex;flex-direction:column;gap:22px;padding-block:18px 8px}
+.view[hidden]{display:none!important}
+
+.eyebrow{font-size:11.5px;letter-spacing:1.5px;text-transform:uppercase;font-weight:700;color:var(--muted)}
+.h2{font-family:var(--display);font-size:30px;font-weight:700;line-height:1.08;letter-spacing:-.3px}
+.h3{font-family:var(--display);font-size:21px;font-weight:700;line-height:1.15}
+.lead{color:var(--muted);font-size:15px;max-width:60ch}
+.sec{display:flex;flex-direction:column;gap:12px}
+.sec-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.sec-head .act{font-size:13.5px;font-weight:600;color:var(--accent);background:none;border:0;padding:4px 0}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow)}
+.pad{padding:16px}
+
+/* calculator */
+.calc{display:flex;flex-direction:column;gap:16px}
+.calc-row{display:flex;flex-direction:column;gap:8px}
+.calc-row label,.calc-row .lbl{font-size:13px;font-weight:600;color:var(--muted)}
+.stepper{display:flex;align-items:center;gap:12px}
+.stepper>button{width:44px;height:44px;border-radius:12px;border:1px solid var(--line);background:var(--surface-2);font-size:22px;line-height:1;display:grid;place-items:center}
+.stepper output{font-family:var(--display);font-size:40px;font-weight:700;min-width:64px;text-align:center;font-variant-numeric:tabular-nums;line-height:1}
+.stepper .unit{font-size:14px;color:var(--muted)}
+.quick{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.quick button{border:1px solid var(--line);background:none;border-radius:10px;padding:7px 0;font-size:14px;font-weight:600;color:var(--muted);font-variant-numeric:tabular-nums}
+.quick button[aria-pressed="true"]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.seg{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;background:var(--surface-2);border-radius:12px;padding:3px;gap:3px}
+.seg button{border:0;background:none;border-radius:9px;padding:9px 6px;font-size:14px;font-weight:600;color:var(--muted)}
+.seg button[aria-pressed="true"]{background:var(--surface);color:var(--fg);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.times{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.times .t{background:var(--surface-2);border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:2px;min-width:0}
+.times .t span{font-size:12px;color:var(--muted);font-weight:600}
+.times input{border:0;background:none;font-size:22px;font-weight:700;font-variant-numeric:tabular-nums;padding:0;width:100%;min-width:0}
+.calc .yield{font-size:13px;color:var(--muted);border-top:1px solid var(--line);padding-top:12px}
+
+/* phases overview */
+.phases{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.phase{border-radius:14px;padding:12px 10px;display:flex;flex-direction:column;gap:4px;min-width:0}
+.phase b{font-family:var(--display);font-size:26px;line-height:1}
+.phase strong{font-size:13.5px;line-height:1.2}
+.phase span{font-size:12px;opacity:.85;line-height:1.3}
+.ph1{background:var(--p1s);color:var(--p1)} .ph2{background:var(--p2s);color:var(--p2)} .ph3{background:var(--p3s);color:var(--p3)}
+.phase strong,.phase span{color:var(--fg)}
+
+/* timeline */
+.tl{display:flex;flex-direction:column}
+.tl-day{display:flex;align-items:center;gap:10px;padding:14px 0 8px}
+.tl-day .tag{font-size:11.5px;letter-spacing:1.3px;text-transform:uppercase;font-weight:700;padding:4px 10px;border-radius:999px}
+.tl-day .sum{font-size:12.5px;color:var(--muted)}
+.tl-item{display:grid;grid-template-columns:52px 18px 1fr;column-gap:8px}
+.tl-item .tm{font-weight:700;font-variant-numeric:tabular-nums;font-size:15px;padding-top:12px}
+.tl-item .rail{position:relative}
+.tl-item .rail::before{content:"";position:absolute;left:50%;top:0;bottom:0;width:2px;transform:translateX(-50%);background:var(--line)}
+.tl-item .rail::after{content:"";position:absolute;left:50%;top:15px;width:12px;height:12px;border-radius:50%;transform:translateX(-50%);background:currentColor;box-shadow:0 0 0 3px var(--bg)}
+.tl-item .body{padding:10px 0 12px;border-bottom:1px solid var(--line);min-width:0}
+.tl-item .body b{font-size:15.5px;display:block;line-height:1.3}
+.tl-item .body p{font-size:14px;color:var(--muted);margin-top:2px}
+.tl-meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.chip{display:inline-flex;align-items:center;gap:5px;font-size:12.5px;font-weight:600;padding:3px 9px;border-radius:999px;background:var(--surface-2);color:var(--fg);border:0;white-space:nowrap}
+.chip.link{background:var(--accent-soft);color:var(--accent)}
+.chip.fridge{background:none;border:1px dashed var(--line);color:var(--muted)}
+.c1{color:var(--p1)} .c2{color:var(--p2)} .c3{color:var(--p3)}
+
+/* waits */
+.waits{display:flex;flex-direction:column}
+.wait{display:grid;grid-template-columns:1fr auto;gap:2px 12px;padding:12px 16px;border-bottom:1px solid var(--line);align-items:center}
+.wait:last-child{border-bottom:0}
+.wait b{font-size:15px}
+.wait .rng{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums;grid-column:1}
+.wait .st{grid-row:1/3;grid-column:2;text-align:right;font-variant-numeric:tabular-nums}
+.wait .st strong{display:block;font-size:17px}
+.wait .st small{font-size:12px;font-weight:600}
+.ok{color:var(--ok)} .bad{color:var(--warn)}
+
+/* lists */
+.list{display:flex;flex-direction:column}
+.row{display:flex;align-items:flex-start;gap:12px;padding:12px 16px;border-bottom:1px solid var(--line);min-width:0}
+.row:last-child{border-bottom:0}
+.row .q{margin-left:auto;font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap;text-align:right;padding-left:8px}
+.row .n{min-width:0}
+.row .n small{display:block;color:var(--muted);font-size:13px;line-height:1.35;margin-top:1px}
+.check-row{cursor:pointer;user-select:none}
+.box{flex:none;width:22px;height:22px;border-radius:7px;border:1.5px solid var(--muted);display:grid;place-items:center;margin-top:1px;transition:background .15s,border-color .15s}
+.box svg{opacity:0}
+.check-row[aria-checked="true"] .box{background:var(--accent);border-color:var(--accent)}
+.check-row[aria-checked="true"] .box svg{opacity:1}
+.check-row[aria-checked="true"] .n,.check-row[aria-checked="true"] .q{opacity:.45}
+.check-row[aria-checked="true"] .n>span:first-child{text-decoration:line-through}
+.group-t{font-size:12px;letter-spacing:1.3px;text-transform:uppercase;font-weight:700;color:var(--muted);padding:2px 2px 0}
+.progress{height:6px;border-radius:6px;background:var(--surface-2);overflow:hidden}
+.progress i{display:block;height:100%;background:var(--accent);border-radius:6px;transition:width .3s}
+
+/* recipes */
+.rtabs{position:sticky;top:calc(env(safe-area-inset-top,0px) + 57px);z-index:15;background:var(--bg);padding-block:8px;margin-block:-8px}
+.ing-head{display:flex;justify-content:space-between;align-items:baseline}
+.steps{display:flex;flex-direction:column}
+.step{display:grid;grid-template-columns:34px 1fr;gap:12px;padding:14px 16px;border-bottom:1px solid var(--line)}
+.step:last-child{border-bottom:0}
+.step .num{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-family:var(--display);font-weight:700;font-size:16px;color:var(--bg);background:currentColor;border:0;padding:0;position:relative}
+.step .num span{color:var(--bg)}
+.step[data-done="true"] .num{background:var(--surface-2)}
+.step[data-done="true"] .num span{color:var(--muted)}
+.step[data-done="true"] .txt{opacity:.5}
+.step .txt{min-width:0}
+.step .txt b{display:block;font-size:16px;line-height:1.3;color:var(--fg)}
+.step .txt p{font-size:14.5px;color:var(--fg);opacity:.86;margin-top:3px}
+.step .tools{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
+.timer-btn{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:700;padding:6px 11px;border-radius:999px;border:1px solid var(--line);background:var(--surface-2)}
+.pill{font-size:12.5px;font-weight:600;padding:3px 9px;border-radius:999px;background:var(--surface-2);color:var(--muted)}
+.stage-h{display:flex;align-items:center;gap:10px;padding:13px 16px;border-bottom:1px solid var(--line)}
+.stage-h .tag{font-size:11px;letter-spacing:1.2px;text-transform:uppercase;font-weight:700;padding:3px 9px;border-radius:999px}
+.stage-h h3{font-size:16px;font-weight:700}
+.note{font-size:14px;padding:12px 14px;border-radius:12px;background:var(--surface-2)}
+.note b{font-weight:700}
+.note.warn{background:var(--warn-s)} .note.warn b{color:var(--warn)}
+.note.tip{background:var(--p3s)} .note.tip b{color:var(--p3)}
+.diagram{padding:14px 12px 10px;color:var(--fg)}
+.diagram svg{width:100%;height:auto;display:block}
+.ponto{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.ponto div{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px;font-size:13px;min-width:0}
+.ponto b{display:block;font-size:11.5px;letter-spacing:1.1px;text-transform:uppercase;color:var(--accent);margin-bottom:3px}
+.switch{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px}
+.switch span{font-size:14.5px;font-weight:600}
+.switch small{display:block;font-size:12.5px;color:var(--muted);font-weight:400}
+.tog{width:50px;height:30px;border-radius:999px;border:0;background:var(--surface-2);position:relative;flex:none;transition:background .2s}
+.tog::after{content:"";position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25);transition:transform .2s}
+.tog[aria-checked="true"]{background:var(--p3)}
+.tog[aria-checked="true"]::after{transform:translateX(20px)}
+
+/* variations */
+.vars{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.var{padding:14px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.var .k{font-size:11px;letter-spacing:1.1px;text-transform:uppercase;font-weight:700}
+.var h4{margin:0;font-family:var(--display);font-size:18px;line-height:1.15}
+.var p{font-size:13px;color:var(--muted)}
+.var dl{margin:4px 0 0;display:grid;grid-template-columns:auto 1fr;gap:3px 8px;font-size:12.5px;border-top:1px solid var(--line);padding-top:8px}
+.var dt{color:var(--muted)} .var dd{margin:0;font-weight:600}
+
+/* help */
+details.acc{border-bottom:1px solid var(--line)}
+details.acc:last-child{border-bottom:0}
+details.acc summary{list-style:none;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:15px 16px;font-weight:700;font-size:16px;cursor:pointer}
+details.acc summary::-webkit-details-marker{display:none}
+details.acc summary svg{transition:transform .2s;color:var(--muted);flex:none}
+details.acc[open] summary svg{transform:rotate(90deg)}
+details.acc .in{padding:0 16px 16px;display:flex;flex-direction:column;gap:10px;font-size:14.5px}
+.kv{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.kv>div{padding:10px 12px;border-bottom:1px solid var(--line)}
+.kv>div:last-child{border-bottom:0}
+.kv b{display:block;font-size:14.5px}
+.kv span{display:block;font-size:13.5px;color:var(--muted)}
+.kv .cols{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:4px}
+.kv .cols em{display:block;font-style:normal;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);font-weight:700}
+.kv .cols p{font-size:13.5px}
+
+/* timer bar + tabs */
+.timerbar{position:fixed;left:0;right:0;bottom:calc(var(--tab-h) + env(safe-area-inset-bottom,0px));z-index:25;padding-left:max(12px,env(safe-area-inset-left,0px));padding-right:max(12px,env(safe-area-inset-right,0px));padding-bottom:8px}
+.timerbar .in{max-width:616px;margin:0 auto;background:var(--fg);color:var(--bg);border-radius:16px;padding:10px 10px 10px 16px;display:flex;align-items:center;gap:10px;box-shadow:0 8px 30px rgba(0,0,0,.25)}
+.timerbar .lab{font-size:13px;opacity:.75;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.timerbar .clock{font-size:24px;font-weight:700;font-variant-numeric:tabular-nums}
+.timerbar button{border:0;border-radius:10px;padding:8px 11px;font-size:13px;font-weight:700;background:rgba(127,127,127,.25);color:var(--bg)}
+.timerbar.done .in{background:var(--p2);color:#fff}
+.timerbar.done button{color:#fff}
+.tabs{position:fixed;left:0;right:0;bottom:0;z-index:24;background:var(--surface);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px);padding-left:env(safe-area-inset-left,0px);padding-right:env(safe-area-inset-right,0px)}
+.tabs nav{max-width:640px;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr);height:var(--tab-h)}
+.tabs a{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;text-decoration:none;color:var(--muted);font-size:10.5px;font-weight:600;letter-spacing:.2px}
+.tabs a[aria-current="page"]{color:var(--accent)}
+.tabs svg{width:24px;height:24px}
+
+@media (max-width:380px){.phases{grid-template-columns:1fr}.phase{flex-direction:row;align-items:baseline;gap:8px}.vars{grid-template-columns:1fr}.ponto{grid-template-columns:1fr}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+
+<header class="top">
+  <div class="wrap">
+    <div class="brand">
+      <svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><rect x="1" y="1" width="28" height="28" rx="7" fill="var(--accent)"/><g fill="none" stroke="var(--bg)" stroke-width="1.6"><path d="M15 5 C19 10 19 20 15 25 C11 20 11 10 15 5Z"/><path d="M5 15 C10 11 20 11 25 15 C20 19 10 19 5 15Z"/></g><circle cx="15" cy="15" r="2.4" fill="var(--p2)"/></svg>
+      <div><h1 id="title">Cannoli</h1><small>Siciliani</small></div>
+    </div>
+    <button class="portion-chip" id="chip" type="button"></button>
+  </div>
+</header>
+
+<main class="wrap">
+
+<!-- PLANO -->
+<section class="view" id="v-plano">
+  <div class="sec">
+    <div class="eyebrow">Plano</div>
+    <h2 class="h2">Dois dias, três fases</h2>
+    <p class="lead">Escolha quantos cannoli, o recheio e a hora de servir. Quantidades, lista de compras e horários se ajustam sozinhos.</p>
+  </div>
+
+  <div class="card pad calc" id="calc">
+    <div class="calc-row">
+      <span class="lbl">Quantos cannoli</span>
+      <div class="stepper">
+        <button type="button" id="minus" aria-label="Menos 2">−</button>
+        <output id="n" aria-live="polite">12</output>
+        <button type="button" id="plus" aria-label="Mais 2">+</button>
+        <span class="unit">unidades</span>
+      </div>
+      <div class="quick" id="quick" role="group" aria-label="Atalhos de quantidade"></div>
+    </div>
+    <div class="calc-row">
+      <span class="lbl">Recheio</span>
+      <div class="seg" id="seg-fill" role="group" aria-label="Recheio">
+        <button type="button" data-v="ricota">Ricota</button><button type="button" data-v="creme">Creme</button><button type="button" data-v="ambos">Os dois</button>
+      </div>
+    </div>
+    <div class="calc-row" id="row-flavor">
+      <span class="lbl">Sabor do creme</span>
+      <div class="seg" id="seg-flavor" role="group" aria-label="Sabor do creme">
+        <button type="button" data-v="limao">Limão</button><button type="button" data-v="choc">Chocolate</button>
+      </div>
+    </div>
+    <div class="times">
+      <label class="t" for="t-start"><span>Começar na véspera</span><input type="time" id="t-start" value="20:00"></label>
+      <label class="t" for="t-serve"><span>Servir no dia</span><input type="time" id="t-serve" value="16:00"></label>
+    </div>
+    <p class="yield" id="yield"></p>
+  </div>
+
+  <div class="sec">
+    <div class="sec-head"><h3 class="h3">As três fases</h3></div>
+    <div class="phases">
+      <div class="phase ph1"><b>1</b><strong>Preparo prévio</strong><span>Véspera à noite. Tudo descansa na geladeira.</span></div>
+      <div class="phase ph2"><b>2</b><strong>Preparo no dia</strong><span>Recheio pronto e cascas fritas, ainda separados.</span></div>
+      <div class="phase ph3"><b>3</b><strong>Montagem</strong><span>Na hora de servir. Recheada, a casca amolece em 1 h.</span></div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-head"><h3 class="h3">Linha do tempo</h3><span class="eyebrow" id="active-total"></span></div>
+    <div class="tl" id="timeline"></div>
+  </div>
+
+  <div class="sec">
+    <div class="sec-head"><h3 class="h3">Na geladeira</h3></div>
+    <p class="lead" style="margin-top:-6px">Tempo de espera de cada preparo com os horários acima, comparado com o mínimo.</p>
+    <div class="card waits" id="waits"></div>
+  </div>
+</section>
+
+<!-- COMPRAS -->
+<section class="view" id="v-compras" hidden>
+  <div class="sec">
+    <div class="eyebrow">Lista de compras</div>
+    <h2 class="h2" id="shop-title">Mercado</h2>
+    <p class="lead">Organizada por seção do mercado. Toque para marcar o que já está no carrinho.</p>
+    <div class="progress" aria-hidden="true"><i id="shop-prog"></i></div>
+    <div class="sec-head"><span class="eyebrow" id="shop-count"></span><button class="act" type="button" id="shop-reset">Desmarcar tudo</button></div>
+  </div>
+  <div id="shop" class="sec"></div>
+</section>
+
+<!-- RECEITAS -->
+<section class="view" id="v-receitas" hidden>
+  <div class="sec">
+    <div class="eyebrow">Receitas</div>
+    <h2 class="h2" id="r-title">Casca</h2>
+  </div>
+  <div class="rtabs"><div class="seg" id="seg-recipe" role="group" aria-label="Receita">
+    <button type="button" data-v="casca">Casca</button><button type="button" data-v="ricota">Ricota</button><button type="button" data-v="creme">Creme</button>
+  </div></div>
+  <div class="card">
+    <div class="switch"><span>Tela sempre ligada<small id="wake-note">Para cozinhar sem a tela apagar</small></span><button class="tog" type="button" role="switch" aria-checked="false" id="wake" aria-label="Manter a tela ligada"></button></div>
+  </div>
+  <div id="recipe" class="sec"></div>
+</section>
+
+<!-- MONTAGEM -->
+<section class="view" id="v-montagem" hidden>
+  <div class="sec">
+    <div class="eyebrow">Fase 3 · na hora de servir</div>
+    <h2 class="h2">Montagem</h2>
+    <p class="lead">Recheie no máximo 30 min antes de comer. Cada cannolo leva de 30 a 35 g de recheio.</p>
+  </div>
+  <div class="card steps" id="mont-steps"></div>
+  <div class="sec">
+    <div class="sec-head"><h3 class="h3">Variações</h3></div>
+    <div class="vars" id="vars"></div>
+  </div>
+</section>
+
+<!-- AJUDA -->
+<section class="view" id="v-ajuda" hidden>
+  <div class="sec">
+    <div class="eyebrow">Guia</div>
+    <h2 class="h2">Antes e durante</h2>
+    <p class="lead">Equipamentos, escolhas da receita, problemas comuns e como guardar.</p>
+  </div>
+  <div class="card" id="help"></div>
+</section>
+
+</main>
+
+<div class="timerbar" id="timerbar" hidden><div class="in">
+  <div class="lab" id="tm-lab"></div><div class="clock" id="tm-clock">00:00</div>
+  <button type="button" id="tm-pause">Pausar</button><button type="button" id="tm-stop">Fechar</button>
+</div></div>
+
+<div class="tabs"><nav aria-label="Seções">
+  <a href="#plano" data-tab="plano"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3.5" y="5" width="17" height="15" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>Plano</a>
+  <a href="#compras" data-tab="compras"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h2l2.2 10.2a1 1 0 0 0 1 .8h8.3a1 1 0 0 0 1-.8L20 8H7"/><circle cx="10" cy="19.5" r="1.3"/><circle cx="17" cy="19.5" r="1.3"/></svg>Compras</a>
+  <a href="#receitas" data-tab="receitas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4.5h10.5a3 3 0 0 1 3 3V20H8a3 3 0 0 1-3-3Z"/><path d="M5 17a3 3 0 0 1 3-3h10.5M9 8h6"/></svg>Receitas</a>
+  <a href="#montagem" data-tab="montagem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="8" width="14" height="8" rx="2" transform="rotate(-20 12 12)"/><circle cx="4.5" cy="14.6" r="2.2"/><circle cx="19.5" cy="9.4" r="2.2"/></svg>Montagem</a>
+  <a href="#ajuda" data-tab="ajuda"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="8.5"/><path d="M9.6 9.5a2.5 2.5 0 1 1 3.4 2.3c-.6.3-1 .8-1 1.5v.4"/><circle cx="12" cy="16.8" r=".6" fill="currentColor"/></svg>Guia</a>
+</nav></div>
+
+<script>
+(function(){
+"use strict";
+var KEY='cannoli.v1';
+var S={n:12,fill:'ricota',flavor:'limao',start:'20:00',serve:'16:00',recipe:'casca',shop:{},steps:{}};
+try{var saved=JSON.parse(localStorage.getItem(KEY)||'null');if(saved&&typeof saved==='object'){for(var k in saved)if(k in S)S[k]=saved[k];}}catch(e){}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+var $=function(id){return document.getElementById(id)};
+var CHECK='<svg width="14" height="14" viewBox="0 0 14 14"><path d="M3 7.4l2.6 2.6L11 4.4" fill="none" stroke="var(--bg)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+var CHEV='<svg width="16" height="16" viewBox="0 0 16 16"><path d="M6 3.5l4.5 4.5L6 12.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+/* ---------- quantities ---------- */
+function hasR(){return S.fill!=='creme'} function hasC(){return S.fill!=='ricota'}
+function fC(){return S.n/12} // casca + finalização
+function fR(){return S.fill==='ambos'?S.n/24:S.n/12}
+function fCr(){return S.fill==='ambos'?S.n/24:S.n/12}
+function rnd(v){return v<30?Math.round(v):v<200?Math.round(v/5)*5:Math.round(v/10)*10}
+function frac(v){var w=Math.floor(v+1e-9),r=Math.round((v-w)*4)/4,f={0:'',0.25:'¼',0.5:'½',0.75:'¾'}[r];if(r===1){w++;f=''}return (w?w:'')+(f||'')||'0'}
+function eggs(v){return Math.max(.5,Math.round(v*2)/2)}
+function q(v,u){if(u==='g'||u==='ml')return rnd(v)+' '+u;return v}
+
+function cascaIng(){var f=fC(),e=eggs(f);return[
+  {n:'Farinha de trigo',q:q(250*f,'g')},
+  {n:'Açúcar',q:q(25*f,'g')},
+  {n:'Cacau em pó 100%',q:q(5*f,'g'),s:'Opcional. Dá cor e um fundo amargo'},
+  {n:'Sal',q:'1 pitada'},
+  {n:'Banha gelada',q:q(30*f,'g'),s:'Ou manteiga sem sal'},
+  {n:e===1?'Ovo grande':'Ovos grandes',q:frac(e),s:e%1?'Bata 1 ovo e use metade':''},
+  {n:'Vinho branco seco',q:q(60*f,'ml'),s:'Com Marsala, use '+rnd(75*f)+' ml dele no lugar do vinho e do vinagre'},
+  {n:'Vinagre de vinho branco',q:q(15*f,'ml')},
+  {n:'Clara para selar',q:'1'},
+  {n:'Banha ou óleo para fritar',q:'~1 kg / 1 L',s:'Depende do tamanho da panela, não da receita'}]}
+function ricotaIng(){var f=fR();return[
+  {n:'Ricota fresca',q:q(500*f,'g'),s:'De ovelha, se achar. Senão, de vaca, a mais fresca e úmida'},
+  {n:'Açúcar de confeiteiro',q:q(100*f,'g')},
+  {n:'Gotas de chocolate meio amargo',q:q(50*f,'g'),s:'As menores que achar'},
+  {n:'Casca de laranja cristalizada',q:q(40*f,'g'),s:'Picadinha'},
+  {n:'Canela em pó',q:'1 pitada',s:'Opcional'}]}
+function cremeIng(){var f=fCr(),choc=S.flavor==='choc',L=[
+  {n:'Leite integral',q:q(500*f,'ml')},
+  {n:'Gemas',q:String(Math.max(1,Math.round(4*f)))},
+  {n:'Açúcar',q:q((choc?100:120)*f,'g')},
+  {n:'Amido de milho',q:q(45*f,'g')},
+  {n:'Sal',q:'1 pitada'}];
+  if(choc)L.splice(4,0,{n:'Chocolate meio amargo picado',q:q(70*f,'g')});
+  else{L.splice(4,0,{n:'Casca de limão-siciliano',q:(f>1.5?'2':'1')+' un.',s:'Em tiras, sem a parte branca'});L.splice(5,0,{n:'Extrato de baunilha',q:frac(Math.max(.25,f))+' c. chá',s:'Opcional'})}
+  return L}
+function finIng(){var f=fC();return[
+  {n:'Pistache sem sal',q:q(30*f,'g'),s:'Picado, para as pontas'},
+  {n:'Casca de laranja cristalizada',q:q(20*f,'g'),s:'Em tiras, para as pontas'},
+  {n:'Cerejas cristalizadas',q:Math.ceil(S.n/2)+' un.',s:'Opcional. Meia por cannolo'},
+  {n:'Açúcar de confeiteiro',q:'a gosto',s:'Para polvilhar'}]}
+
+/* ---------- shopping ---------- */
+function shopping(){
+  var f=fC(),r=fR(),c=fCr(),choc=S.flavor==='choc',R=hasR(),C=hasC();
+  var ovos=Math.ceil(eggs(f))+(C?Math.max(1,Math.round(4*c)):1);
+  var G=[];
+  G.push({t:'Laticínios e ovos',items:[
+    R&&{id:'ricota',n:'Ricota fresca',q:q(500*r,'g'),s:'De ovelha, se achar. Evite a de longa validade, que é mais seca'},
+    C&&{id:'leite',n:'Leite integral',q:q(500*c,'ml')},
+    {id:'ovos',n:'Ovos grandes',q:ovos+' un.',s:C?'As claras que sobram do creme servem para selar a casca':'Um para a massa e um para a clara que sela a casca'},
+    {id:'banha-m',n:'Banha suína',q:q(30*f,'g')+' + fritura',s:'Ou manteiga sem sal para a massa e óleo para fritar'}]});
+  G.push({t:'Mercearia',items:[
+    {id:'farinha',n:'Farinha de trigo',q:q(250*f,'g')},
+    {id:'acucar',n:'Açúcar refinado',q:q(25*f+(C?(choc?100:120)*c:0),'g')},
+    C&&{id:'amido',n:'Amido de milho',q:q(45*c,'g')},
+    {id:'cacau',n:'Cacau em pó 100%',q:q(5*f,'g'),s:'Opcional'},
+    {id:'sal',n:'Sal',q:'1 pitada'},
+    {id:'vinagre',n:'Vinagre de vinho branco',q:q(15*f,'ml')},
+    {id:'oleo',n:'Óleo neutro',q:'~1 L',s:'Só se não for fritar na banha'}]});
+  G.push({t:'Confeitaria',items:[
+    {id:'confeiteiro',n:'Açúcar de confeiteiro',q:R?q(100*r,'g')+' + extra':'a gosto'},
+    R&&{id:'gotas',n:'Gotas de chocolate meio amargo',q:q(50*r,'g')},
+    C&&choc&&{id:'choc',n:'Chocolate meio amargo',q:q(70*c,'g')},
+    {id:'laranja',n:'Casca de laranja cristalizada',q:q((R?40*r:0)+20*f,'g'),s:'Só casca de laranja, não a fruta cristalizada mista'},
+    {id:'pistache',n:'Pistache sem sal',q:q(30*f,'g')},
+    {id:'cereja',n:'Cerejas cristalizadas',q:Math.ceil(S.n/2)+' un.',s:'Opcional'},
+    R&&{id:'canela',n:'Canela em pó',q:'1 pitada',s:'Opcional'},
+    C&&!choc&&{id:'baunilha',n:'Extrato de baunilha',q:frac(Math.max(.25,c))+' c. chá',s:'Opcional'}]});
+  G.push({t:'Hortifrúti e bebidas',items:[
+    C&&!choc&&{id:'limao',n:'Limão-siciliano',q:(c>1.5?'2':'1')+' un.'},
+    {id:'vinho',n:'Vinho branco seco',q:q(60*f,'ml'),s:'Ou Marsala, se achar'}]});
+  G.forEach(function(g){g.items=g.items.filter(Boolean)});
+  return G.filter(function(g){return g.items.length});
+}
+
+/* ---------- steps data ---------- */
+var STEPS={
+ casca:[
+  {h:'Massa',ph:1,list:[
+   {t:'Misture os secos',p:'Em uma tigela, junte a farinha, o açúcar, o cacau e o sal.'},
+   {t:'Incorpore a banha',d:'3 min',p:'Junte a banha gelada em pedaços e esfregue com a ponta dos dedos até virar uma farofa fina, sem pedaços visíveis.'},
+   {t:'Junte os líquidos',p:'Bata o ovo com o vinho e o vinagre. Despeje aos poucos na farofa, misturando com um garfo. Pare quando a massa juntar.'},
+   {t:'Sove',d:'8 a 10 min',tm:600,p:'Até ficar lisa, firme e elástica, como massa de pastel. Se esfarelar, junte 1 colher de sopa de vinho. Se grudar, polvilhe farinha.'},
+   {t:'Descanse',d:'mín. 1 h · ideal a noite toda',p:'Faça uma bola, embrulhe bem em filme plástico e leve à geladeira.'}]},
+  {h:'Abrir e enrolar',ph:2,diagram:true,list:[
+   {t:'Tire da geladeira',d:'30 min',tm:1800,p:'Deixe a massa em temperatura ambiente antes de abrir.'},
+   {t:'Divida e abra',p:'Corte em 2 partes e mantenha uma embrulhada. Abra a outra até 1 a 1,5 mm, quase dá para ver a bancada. No cilindro, vá do ponto mais largo até o penúltimo, dobrando ao meio nas primeiras passadas.'},
+   {t:'Corte os discos',p:'Use o cortador de 10 cm. Passe o rolo uma vez em um só sentido para deixar o disco oval (~12 cm).'},
+   {t:'Enrole',p:'Unte os tubos de leve. Ponha o tubo atravessado no meio da oval, no sentido da largura, e dobre as duas pontas por cima, com cerca de 1 cm de sobreposição.'},
+   {t:'Sele',p:'Pincele a clara só onde a massa se sobrepõe e aperte bem. Se a clara encostar no metal, a casca gruda no tubo.'},
+   {t:'Sobras',d:'10 min',tm:600,p:'Junte as aparas, deixe descansar 10 min e abra de novo. Só uma vez, porque depois a massa endurece.'}]},
+  {h:'Fritar',ph:2,list:[
+   {t:'Aqueça a gordura',p:'Com pelo menos 5 cm de altura, a 170–175 °C. Durante a fritura, mantenha entre 165 e 180 °C.'},
+   {t:'Frite em levas',d:'1½ a 2 min',tm:120,p:'2 ou 3 por vez, ainda nos tubos, virando, até ficar dourado-escuro e cheio de bolhas.'},
+   {t:'Escorra',p:'Pegue pela ponta do tubo com a pinça e deixe na grade, inclinado, para a gordura escorrer de dentro.'},
+   {t:'Desenforme morno',d:'30 a 60 s',p:'Segure com um pano e deslize a casca para fora. Fria, ela gruda.'},
+   {t:'Esfrie os tubos',p:'Enrole de novo só em tubo frio. Em tubo quente, a massa encolhe e amolece.'},
+   {t:'Esfrie as cascas',d:'20 min',tm:1200,p:'Na grade, até ficarem frias. Recheio em casca morna derrete.'}],
+   note:'<b>Segurança:</b> não saia de perto da panela e mantenha água longe da gordura. Se soltar fumaça, desligue o fogo. Pegue sempre pelo tubo, que fica muito quente.',noteCls:'warn'}],
+ ricota:[
+  {h:'Na véspera',ph:1,list:[
+   {t:'Escorra',d:'8 a 12 h',p:'Forre uma peneira com um pano úmido e torcido, coloque sobre uma tigela e ponha a ricota. Cubra com um prato pequeno para fazer peso leve e leve à geladeira. Ela perde de 15 a 20% do peso em soro.'}]},
+  {h:'No dia',ph:2,list:[
+   {t:'Peneire',d:'10 min',p:'Passe a ricota pela peneira fina de metal, pressionando com a espátula. Com ricota de vaca, peneire duas vezes. Esse passo deixa o recheio aveludado.'},
+   {t:'Adoce',p:'Misture o açúcar de confeiteiro e a canela com a espátula, sem bater, para não amolecer. Prove e ajuste o doce.'},
+   {t:'Gele',d:'mín. 1 h',p:'Cubra e leve à geladeira. Frio, o recheio firma e fica fácil de pôr no saco de confeitar.'}]},
+  {h:'Na hora',ph:3,list:[
+   {t:'Finalize',p:'Misture as gotas de chocolate e a laranja picada logo antes de rechear.'}],
+   note:'<b>Se a ricota de vaca continuar seca:</b> junte de 1 a 2 colheres de sopa de creme de leite fresco. Fica mais cremosa, mas é um ajuste, não faz parte da receita tradicional.',noteCls:''}],
+ creme:[
+  {h:'Na véspera, ou 4 h antes',ph:1,list:[
+   {t:'Infusione o leite',d:'10 min',tm:600,p:'Aqueça o leite com a casca de limão (e a baunilha) até quase ferver. Desligue, tampe e espere. Depois tire a casca.',v:'limao'},
+   {t:'Aqueça o leite',p:'Aqueça o leite até quase ferver e desligue.',v:'choc'},
+   {t:'Prepare as gemas',p:'Bata as gemas com o açúcar e o sal até clarear. Junte o amido e bata até ficar liso, sem grumos.'},
+   {t:'Tempere',p:'Despeje cerca de ⅓ do leite quente sobre as gemas, em fio, sem parar de mexer. Isso evita que as gemas talhem.'},
+   {t:'Cozinhe',d:'fervura + 1 min',tm:60,p:'Volte tudo para a panela em fogo médio, mexendo sem parar com o fouet, inclusive nos cantos. Quando engrossar e soltar as primeiras bolhas, cozinhe mais 1 minuto. Sem isso, o creme afina na geladeira.'},
+   {t:'Derreta o chocolate',p:'Fora do fogo, junte o chocolate picado e mexa até derreter.',v:'choc'},
+   {t:'Esfrie',d:'mín. 4 h',p:'Passe para uma travessa rasa e cubra com filme encostado na superfície, para não formar película. Leve à geladeira depois de amornar.'}]},
+  {h:'Na hora',ph:3,list:[
+   {t:'Bata antes de usar',d:'30 s',p:'Gelado, o creme fica em bloco. Bata com fouet ou batedeira até ficar liso e brilhante.'}],
+   note:'<b>Grumos?</b> Passe o creme por uma peneira ainda quente, antes de cobrir.',noteCls:''}]
+};
+var MONT=[
+  {t:'Finalize o recheio',p:'Ricota: misture chocolate e laranja. Creme: bata até ficar liso.'},
+  {t:'Encha o saco',p:'Bico liso de 1,2 a 1,5 cm, ou corte a ponta do saco nesse diâmetro. Bicos menores entopem com as gotas de chocolate.'},
+  {t:'Recheie pelas duas pontas',p:'Metade por um lado e metade pelo outro, para não ficar buraco no meio.'},
+  {t:'Acerte as pontas',p:'Raspe com uma espátula e encoste na guarnição: pistache, laranja ou meia cereja.'},
+  {t:'Polvilhe e sirva',p:'Açúcar de confeiteiro só na hora. Coma em até 1 h, antes de a casca amolecer.'}];
+var VARS=[
+  {k:'Tradicional',c:'c3',h:'Palermo clássico',p:'A referência. Ricota com chocolate e laranja.',r:'Ricota completa',e:'Laranja ou ½ cereja',s:'Com cacau'},
+  {k:'Tradicional',c:'c3',h:'Pistache',p:'O pistache de Bronte é marca da Sicília.',r:'Ricota, mais 30 g de pistache se quiser',e:'Pistache picado',s:'Sem cacau'},
+  {k:'Tradicional',c:'c3',h:'Ricota simples',p:'Sem chocolate. Mais leve e mais ácida.',r:'Ricota sem as gotas',e:'Laranja cristalizada',s:'Com ou sem cacau'},
+  {k:'Variação',c:'c2',h:'Crema al limone',p:'O creme mais italiano. Doce e perfumado.',r:'Creme de limão',e:'Pistache ou raspas de limão',s:'Sem cacau'},
+  {k:'Variação',c:'c2',h:'Crema al cioccolato',p:'A mais doce. Combina com casca de cacau.',r:'Creme de chocolate',e:'Pistache ou chocolate raspado',s:'Com cacau'},
+  {k:'Variação',c:'c2',h:'Bicolor',p:'Uma ponta de cada recheio, para comparar.',r:'Metade ricota, metade creme',e:'Uma de cada',s:'Com cacau'}];
+
+/* ---------- timeline ---------- */
+function mins(hm){var p=String(hm||'0:0').split(':');return (+p[0]||0)*60+(+p[1]||0)}
+function hm(m){m=((Math.round(m)%1440)+1440)%1440;return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0')}
+function dur(m){m=Math.round(m);var h=Math.floor(m/60),r=m%60;return h?(h+' h'+(r?' '+String(r).padStart(2,'0'):'')):r+' min'}
+function r5(v){return Math.round(v/5)*5}
+function plan(){
+  var v=mins(S.start),T=1440+mins(S.serve),R=hasR(),C=hasC();
+  var fry=Math.max(15,r5(S.n*10/3)),roll=Math.max(15,r5(S.n*2.5));
+  var it=[],t=v,mass,cr,ric=v;
+  if(R){it.push({t:t,ph:1,d:10,h:'Pôr a ricota para escorrer',p:'No pano, dentro da peneira, com peso leve. Geladeira.',go:'ricota',fr:'ricota'});t+=10}
+  mass=t;it.push({t:t,ph:1,d:25,h:'Fazer a massa da casca',p:'Misturar, sovar e embrulhar em filme. Geladeira.',go:'casca',fr:'massa'});t+=25;
+  if(C){cr=t;it.push({t:t,ph:1,d:25,h:'Cozinhar o creme',p:'Cobrir com filme encostado na superfície. Geladeira.',go:'creme',fr:'creme'});t+=25}
+  it.push({t:t,ph:1,d:5,h:'Picar as guarnições',p:'Laranja cristalizada e pistache, em potes fechados.'});
+  var fin=T-10,cool=T-30,fr=cool-fry,op=fr-roll,out=op-30,rm=null;
+  if(R){rm=Math.min(v+720,fin-75);it.push({t:rm,ph:2,d:15,h:'Peneirar e adoçar a ricota',p:'Tirar do pano, peneirar (2× se for de vaca), adoçar e voltar à geladeira.',go:'ricota',fr:'ricota2'})}
+  it.push({t:out,ph:2,d:1,h:'Tirar a massa da geladeira',p:'30 min em temperatura ambiente antes de abrir.',go:'casca'});
+  it.push({t:op,ph:2,d:roll,h:'Abrir, cortar e enrolar',p:'Discos de 10 cm com 1 a 1,5 mm, enrolados nos tubos e selados.',go:'casca'});
+  it.push({t:fr,ph:2,d:fry,h:'Fritar e desenformar',p:'Levas de 2 ou 3 a 170–175 °C. Desenformar morno.',go:'casca'});
+  it.push({t:cool,ph:2,d:20,h:'Esfriar as cascas',p:'Na grade, até ficarem frias.'});
+  it.push({t:fin,ph:3,d:5,h:'Finalizar o recheio',p:R&&C?'Chocolate e laranja na ricota; bater o creme.':R?'Misturar chocolate e laranja na ricota.':'Bater o creme até ficar liso.',go:'montagem'});
+  it.push({t:T-5,ph:3,d:5,h:'Rechear, decorar e servir',p:'Pelas duas pontas, guarnição e açúcar.',go:'montagem'});
+  it.sort(function(a,b){return a.t-b.t});
+  var W=[];
+  if(R){W.push({h:'Ricota escorrendo',a:v,b:rm,min:480});W.push({h:'Ricota adoçada gelando',a:rm+15,b:fin,min:60})}
+  W.push({h:'Massa descansando',a:mass+25,b:out,min:60});
+  if(C)W.push({h:'Creme gelando',a:cr+25,b:fin,min:240});
+  var active=it.reduce(function(s,x){return s+x.d},0);
+  return{items:it,waits:W,active:active};
+}
+var PHN={1:'Fase 1 · Véspera',2:'Fase 2 · No dia',3:'Fase 3 · Montagem'};
+var FRN={ricota:'→ geladeira',massa:'→ geladeira',creme:'→ geladeira',ricota2:'→ geladeira'};
+function renderPlan(){
+  var P=plan(),h='',last=0;
+  P.items.forEach(function(x){
+    if(x.ph!==last){
+      var grp=P.items.filter(function(y){return y.ph===x.ph}),sum=grp.reduce(function(s,y){return s+y.d},0);
+      h+='<div class="tl-day"><span class="tag ph'+x.ph+'">'+PHN[x.ph]+'</span><span class="sum">'+dur(sum)+' de trabalho</span></div>';last=x.ph}
+    h+='<div class="tl-item"><div class="tm c'+x.ph+'">'+hm(x.t)+'</div><div class="rail c'+x.ph+'"></div><div class="body"><b>'+x.h+'</b><p>'+x.p+'</p><div class="tl-meta"><span class="chip">'+dur(x.d)+'</span>'+(x.fr?'<span class="chip fridge">'+FRN[x.fr]+'</span>':'')+(x.go?'<button type="button" class="chip link" data-go="'+x.go+'">'+(x.go==='montagem'?'Montagem':'Receita')+CHEV+'</button>':'')+'</div></div></div>';
+  });
+  $('timeline').innerHTML=h;
+  $('active-total').textContent=dur(P.active)+' ativas';
+  $('waits').innerHTML=P.waits.map(function(w){var d=w.b-w.a,ok=d>=w.min;
+    return '<div class="wait"><b>'+w.h+'</b><span class="rng">'+hm(w.a)+' → '+hm(w.b)+' · mínimo '+dur(w.min)+'</span><div class="st '+(ok?'ok':'bad')+'"><strong>'+dur(d)+'</strong><small>'+(ok?'Ok':'Pouco tempo')+'</small></div></div>'}).join('');
+}
+
+/* ---------- render helpers ---------- */
+function ingRows(L){return L.map(function(i){return '<div class="row"><div class="n"><span>'+i.n+'</span>'+(i.s?'<small>'+i.s+'</small>':'')+'</div><div class="q">'+i.q+'</div></div>'}).join('')}
+function stepHTML(key,i,s,ph){var done=!!S.steps[key];
+  return '<div class="step c'+ph+'" data-done="'+done+'"><button type="button" class="num" data-step="'+key+'" aria-pressed="'+done+'" aria-label="Marcar passo '+(i+1)+' como feito"><span>'+(done?'✓':(i+1))+'</span></button><div class="txt"><b>'+s.t+'</b><p>'+s.p+'</p>'+((s.d||s.tm)?'<div class="tools">'+(s.d?'<span class="pill">'+s.d+'</span>':'')+(s.tm?'<button type="button" class="timer-btn" data-timer="'+s.tm+'" data-label="'+s.t+'"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="7" cy="8" r="5"/><path d="M7 5.5V8l1.6 1.2M5.5 1.5h3"/></svg>Timer '+(s.tm>=60?(s.tm/60)+' min':s.tm+' s')+'</button>':'')+'</div>':'')+'</div></div>'}
+var DIAGRAM='<div class="diagram"><svg viewBox="0 0 600 190" aria-label="Disco, oval com o tubo atravessado e massa enrolada"><defs><marker id="ar" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L8 4L0 8z" fill="var(--muted)"/></marker><marker id="ar2" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L8 4L0 8z" fill="var(--p2)"/></marker></defs>'+
+ '<g font-family="Figtree,sans-serif" font-size="15" font-weight="700" fill="var(--fg)"><text x="30" y="22">1 Disco</text><text x="222" y="22">2 Tubo atravessado</text><text x="432" y="22">3 Enrolar e selar</text></g>'+
+ '<circle cx="80" cy="95" r="50" fill="var(--p2s)" stroke="var(--p2)" stroke-width="1.5"/><text x="80" y="176" text-anchor="middle" font-family="Figtree,sans-serif" font-size="13" fill="var(--muted)">10 cm · 1 a 1,5 mm</text>'+
+ '<path d="M150 95h34" stroke="var(--muted)" stroke-width="1.6" marker-end="url(#ar)"/><path d="M362 95h34" stroke="var(--muted)" stroke-width="1.6" marker-end="url(#ar)"/>'+
+ '<ellipse cx="275" cy="95" rx="38" ry="58" fill="var(--p2s)" stroke="var(--p2)" stroke-width="1.5"/><rect x="216" y="85" width="118" height="20" rx="4" fill="var(--surface-2)" stroke="var(--muted)" stroke-width="1.2"/>'+
+ '<path d="M275 42v18" stroke="var(--p2)" stroke-width="1.8" marker-end="url(#ar2)"/><path d="M275 148v-18" stroke="var(--p2)" stroke-width="1.8" marker-end="url(#ar2)"/><text x="275" y="176" text-anchor="middle" font-family="Figtree,sans-serif" font-size="13" fill="var(--muted)">dobre as duas pontas</text>'+
+ '<g transform="translate(500 95) rotate(-12)"><rect x="-84" y="-10" width="168" height="20" rx="4" fill="var(--surface-2)" stroke="var(--muted)" stroke-width="1.2"/><path d="M-58 -26C-30 -30 30 -30 58 -26L58 26C30 30 -30 30 -58 26Z" fill="var(--p2s)" stroke="var(--p2)" stroke-width="1.5"/><path d="M-40 -27C-14 -6 14 6 40 27" fill="none" stroke="var(--warn)" stroke-width="5" stroke-linecap="round"/></g>'+
+ '<text x="500" y="176" text-anchor="middle" font-family="Figtree,sans-serif" font-size="13" font-weight="700" fill="var(--warn)">clara só na emenda</text></svg></div>';
+
+var RT={casca:'Casca',ricota:'Recheio de ricota',creme:'Recheio de creme'};
+function renderRecipe(){
+  var k=S.recipe,h='';
+  $('r-title').textContent=RT[k]+(k==='creme'?(S.flavor==='choc'?' de chocolate':' de limão'):'');
+  segSel('seg-recipe',k);
+  var ing=k==='casca'?cascaIng():k==='ricota'?ricotaIng():cremeIng();
+  var scaleTxt=k==='casca'?S.n+' cascas':((S.fill==='ambos'?S.n/2:S.n)+' cannoli'+(S.fill==='ambos'?' (metade dos '+S.n+')':''));
+  var off=(k==='ricota'&&!hasR())||(k==='creme'&&!hasC());
+  if(off)h+='<p class="note">Este recheio não está no seu plano. As quantidades abaixo são para '+S.n+' cannoli. <button type="button" class="chip link" data-fill="'+k+'">Incluir no plano</button></p>';
+  if(off)scaleTxt=S.n+' cannoli';
+  h+='<div class="sec"><div class="ing-head"><h3 class="h3">Ingredientes</h3><span class="eyebrow">'+scaleTxt+'</span></div><div class="card list">'+ingRows(ing)+'</div></div>';
+  STEPS[k].forEach(function(st,si){
+    var list=st.list.filter(function(s){return !s.v||s.v===S.flavor});
+    h+='<div class="card steps"><div class="stage-h"><span class="tag ph'+st.ph+'">Fase '+st.ph+'</span><h3>'+st.h+'</h3></div>'+(st.diagram?DIAGRAM:'')+list.map(function(s,i){return stepHTML(k+':'+si+':'+s.t,i,s,st.ph)}).join('')+'</div>';
+    if(st.note)h+='<p class="note '+st.noteCls+'">'+st.note+'</p>';
+  });
+  if(k==='ricota')h+='<div class="sec"><h3 class="h3">Ponto do recheio</h3><div class="ponto"><div><b>Textura</b>Liso, sem grãos entre os dedos.</div><div><b>Firmeza</b>Fica em pé na colher, sem soltar soro.</div><div><b>Doce</b>Prove gelado. Menos doce que um brigadeiro.</div></div></div>';
+  h+='<button type="button" class="chip" data-reset="'+k+'" style="align-self:flex-start;padding:8px 14px">Desmarcar passos desta receita</button>';
+  $('recipe').innerHTML=h;
+}
+function renderMont(){
+  $('mont-steps').innerHTML='<div class="stage-h"><span class="tag ph3">Fase 3</span><h3>Rechear e servir</h3></div>'+MONT.map(function(s,i){return stepHTML('mont:'+s.t,i,s,3)}).join('');
+  $('vars').innerHTML=VARS.map(function(v){return '<div class="card var"><span class="k '+v.c+'">'+v.k+'</span><h4>'+v.h+'</h4><p>'+v.p+'</p><dl><dt>Recheio</dt><dd>'+v.r+'</dd><dt>Pontas</dt><dd>'+v.e+'</dd><dt>Casca</dt><dd>'+v.s+'</dd></dl></div>'}).join('');
+}
+function renderShop(){
+  var G=shopping(),tot=0,done=0;
+  $('shop').innerHTML=G.map(function(g){return '<div class="sec"><div class="group-t">'+g.t+'</div><div class="card list">'+g.items.map(function(i){tot++;var c=!!S.shop[i.id];if(c)done++;
+    return '<div class="row check-row" role="checkbox" tabindex="0" aria-checked="'+c+'" data-shop="'+i.id+'"><span class="box">'+CHECK+'</span><div class="n"><span>'+i.n+'</span>'+(i.s?'<small>'+i.s+'</small>':'')+'</div><div class="q">'+i.q+'</div></div>'}).join('')+'</div></div>'}).join('');
+  $('shop-count').textContent=done+' de '+tot+' itens';
+  $('shop-prog').style.width=(tot?done/tot*100:0)+'%';
+  $('shop-title').textContent='Para '+S.n+' cannoli';
+}
+var HELP=[
+ {h:'O tradicional e o que este guia usa',b:'<p>O cannolo de Palermo leva ricota de ovelha adoçada, com chocolate e laranja cristalizada. O recheio de creme existe na Itália, mas é uma variação.</p><div class="kv">'+[
+  ['Ricota','De ovelha','De ovelha, se achar. Senão, de vaca, bem escorrida e peneirada'],
+  ['Vinho da massa','Marsala','Vinho branco seco com um pouco de vinagre'],
+  ['Gordura','Banha, na massa e na fritura','Banha, de preferência. Óleo funciona'],
+  ['Molde','Pedaços de cana (daí o nome)','Tubos de inox']].map(function(r){return '<div><b>'+r[0]+'</b><div class="cols"><div><em>Tradicional</em><p>'+r[1]+'</p></div><div><em>Neste guia</em><p>'+r[2]+'</p></div></div></div>'}).join('')+'</div>'},
+ {h:'Equipamentos',b:'<div class="kv">'+[
+  ['Tubos de cannoli de inox','6 a 12 un., Ø 2 a 2,5 cm. Vendem como "forma para canudinho". Sem eles, use cabos grossos de colher de pau cobertos com alumínio.'],
+  ['Termômetro culinário','Até 200 °C. A temperatura da gordura decide se a casca sai crocante ou encharcada.'],
+  ['Panela funda de fundo grosso','Que caiba pelo menos 5 cm de gordura. Uma panela pequena gasta menos.'],
+  ['Rolo ou cilindro de macarrão','O cilindro deixa a espessura fina e uniforme.'],
+  ['Cortador redondo de 10 cm','Um copo largo ou uma tampa servem.'],
+  ['Pano fino e peneira de metal','Para escorrer e para peneirar a ricota.'],
+  ['Saco de confeitar e bico liso','1,2 a 1,5 cm. Um saco plástico com a ponta cortada também funciona.'],
+  ['Pinça, pincel, grade e papel-toalha','Para fritar, selar e escorrer.']].map(function(r){return '<div><b>'+r[0]+'</b><span>'+r[1]+'</span></div>'}).join('')+'</div>'},
+ {h:'Banha ou óleo para fritar?',b:'<div class="kv">'+[
+  ['Casca','Mais leve e quebradiça','Crocante, um pouco mais firme'],
+  ['Sabor','Mais redondo, sem gosto de porco','Neutro'],
+  ['Onde achar','Açougues e mercados maiores','Qualquer mercado'],
+  ['Depois','Coe e guarde na geladeira','Coe e reuse uma ou duas vezes']].map(function(r){return '<div><b>'+r[0]+'</b><div class="cols"><div><em>Banha</em><p>'+r[1]+'</p></div><div><em>Óleo</em><p>'+r[2]+'</p></div></div></div>'}).join('')+'</div>'},
+ {h:'Se algo der errado',b:'<div class="kv">'+[
+  ['Casca dura e sem bolhas','Massa grossa ou gordura fria. Abra até 1 a 1,5 mm e confira os 170 °C.'],
+  ['Casca encharcada','Gordura abaixo de 165 °C. Frite menos por vez.'],
+  ['Escura por fora, crua por dentro','Gordura acima de 185 °C. Baixe o fogo.'],
+  ['Casca abre na fritura','Sobreposição pequena. Deixe 1 cm, use clara e aperte firme.'],
+  ['Casca gruda no tubo','Tubo sem untar ou clara no metal. Desenforme ainda morna.'],
+  ['Massa encolhe ao abrir','Pouco descanso. Embrulhe e espere mais 20 min.'],
+  ['Recheio de ricota ralo','Ricota mal escorrida. Escorra mais e gele.'],
+  ['Recheio arenoso','Peneire mais uma vez.'],
+  ['Creme mole','Faltou o minuto após a fervura. Volte ao fogo, ferva 1 min e gele.'],
+  ['Casca amoleceu recheada','Recheou cedo demais. Recheie na hora.']].map(function(r){return '<div><b>'+r[0]+'</b><span>'+r[1]+'</span></div>'}).join('')+'</div>'},
+ {h:'Como guardar',b:'<div class="kv">'+[
+  ['Cascas vazias','Pote hermético, fora da geladeira, até 5 dias. Se perderem a crocância, 4 a 5 min no forno a 160 °C.'],
+  ['Recheio de ricota','Geladeira, pote fechado, até 2 dias.'],
+  ['Creme','Geladeira, filme na superfície, até 2 dias.'],
+  ['Massa crua','Geladeira, embrulhada, até 2 dias.'],
+  ['Cannolo montado','Coma em até 1 h. Não guarde.']].map(function(r){return '<div><b>'+r[0]+'</b><span>'+r[1]+'</span></div>'}).join('')+'</div><p class="note tip"><b>Para sobremesa aos poucos:</b> frite todas as cascas de uma vez e recheie só 2 ou 3 por vez.</p>'}];
+function renderHelp(){$('help').innerHTML=HELP.map(function(x,i){return '<details class="acc"'+(i===0?' open':'')+'><summary>'+x.h+CHEV+'</summary><div class="in">'+x.b+'</div></details>'}).join('')}
+
+/* ---------- calculator ---------- */
+function segSel(id,v){Array.prototype.forEach.call($(id).querySelectorAll('button'),function(b){b.setAttribute('aria-pressed',String(b.dataset.v===v))})}
+function renderCalc(){
+  $('n').textContent=S.n;
+  $('quick').innerHTML=[6,12,18,24].map(function(x){return '<button type="button" data-q="'+x+'" aria-pressed="'+(S.n===x)+'">'+x+'</button>'}).join('');
+  segSel('seg-fill',S.fill);segSel('seg-flavor',S.flavor);
+  $('row-flavor').hidden=!hasC();
+  $('t-start').value=S.start;$('t-serve').value=S.serve;
+  var fl={ricota:'ricota',creme:'creme',ambos:'ricota + creme'}[S.fill];
+  $('chip').innerHTML=S.n+' un <i>· '+fl+'</i>';
+  $('yield').textContent=S.fill==='ambos'?('Massa para '+S.n+' cascas. Cada recheio rende '+S.n/2+' cannoli.'):('Massa para '+S.n+' cascas e recheio para '+S.n+' cannoli. Com as sobras de massa, saem 1 ou 2 cascas a mais.');
+}
+function all(){renderCalc();renderPlan();renderShop();renderRecipe();renderMont();save()}
+function setN(x){S.n=Math.max(4,Math.min(48,x));all()}
+$('minus').onclick=function(){setN(S.n-2)};$('plus').onclick=function(){setN(S.n+2)};
+$('quick').onclick=function(e){var b=e.target.closest('[data-q]');if(b)setN(+b.dataset.q)};
+$('seg-fill').onclick=function(e){var b=e.target.closest('[data-v]');if(b){S.fill=b.dataset.v;all()}};
+$('seg-flavor').onclick=function(e){var b=e.target.closest('[data-v]');if(b){S.flavor=b.dataset.v;all()}};
+$('seg-recipe').onclick=function(e){var b=e.target.closest('[data-v]');if(b){S.recipe=b.dataset.v;renderRecipe();save();window.scrollTo(0,0)}};
+$('t-start').onchange=function(){if(this.value){S.start=this.value;renderPlan();save()}};
+$('t-serve').onchange=function(){if(this.value){S.serve=this.value;renderPlan();save()}};
+$('chip').onclick=function(){go('plano');setTimeout(function(){$('calc').scrollIntoView({behavior:'smooth',block:'start'})},30)};
+$('shop-reset').onclick=function(){S.shop={};renderShop();save()};
+
+document.addEventListener('click',function(e){
+  var t=e.target.closest('[data-go]');
+  if(t){var g=t.dataset.go;if(g==='montagem')go('montagem');else{S.recipe=g;save();go('receitas')}return}
+  t=e.target.closest('[data-shop]');if(t){var id=t.dataset.shop;S.shop[id]=!S.shop[id];renderShop();save();return}
+  t=e.target.closest('[data-step]');if(t){var k=t.dataset.step;S.steps[k]=!S.steps[k];if(!S.steps[k])delete S.steps[k];
+    var st=t.closest('.step'),d=!!S.steps[k];st.dataset.done=d;t.setAttribute('aria-pressed',d);t.firstChild.textContent=d?'✓':String(Array.prototype.indexOf.call(st.parentNode.querySelectorAll('.step'),st)+1);save();return}
+  t=e.target.closest('[data-timer]');if(t){startTimer(+t.dataset.timer,t.dataset.label);return}
+  t=e.target.closest('[data-reset]');if(t){var p=t.dataset.reset+':';Object.keys(S.steps).forEach(function(k){if(k.indexOf(p)===0)delete S.steps[k]});renderRecipe();save();return}
+  t=e.target.closest('[data-fill]');if(t){S.fill=S.fill==='ricota'||S.fill==='creme'?'ambos':S.fill;all();return}
+});
+document.addEventListener('keydown',function(e){if((e.key===' '||e.key==='Enter')&&e.target.matches('[data-shop]')){e.preventDefault();e.target.click()}});
+
+/* ---------- timer ---------- */
+var TM={end:0,left:0,run:false,int:null,ctx:null,label:''};
+function fmt(s){s=Math.max(0,Math.ceil(s));return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')}
+function beep(){try{var c=TM.ctx;if(!c)return;[0,.35,.7].forEach(function(d){var o=c.createOscillator(),g=c.createGain();o.frequency.value=880;o.connect(g);g.connect(c.destination);g.gain.setValueAtTime(.0001,c.currentTime+d);g.gain.exponentialRampToValueAtTime(.3,c.currentTime+d+.02);g.gain.exponentialRampToValueAtTime(.0001,c.currentTime+d+.28);o.start(c.currentTime+d);o.stop(c.currentTime+d+.3)})}catch(e){}try{navigator.vibrate&&navigator.vibrate([200,100,200])}catch(e){}}
+function tick(){var l=TM.run?(TM.end-Date.now())/1000:TM.left;$('tm-clock').textContent=fmt(l);
+  if(TM.run&&l<=0){TM.run=false;clearInterval(TM.int);$('timerbar').classList.add('done');$('tm-lab').textContent=TM.label+' · pronto';$('tm-pause').hidden=true;beep()}}
+function startTimer(sec,label){
+  try{TM.ctx=TM.ctx||new (window.AudioContext||window.webkitAudioContext)();TM.ctx.resume&&TM.ctx.resume()}catch(e){}
+  clearInterval(TM.int);TM.label=label;TM.end=Date.now()+sec*1000;TM.run=true;
+  $('timerbar').hidden=false;$('timerbar').classList.remove('done');$('tm-lab').textContent=label;$('tm-pause').hidden=false;$('tm-pause').textContent='Pausar';
+  TM.int=setInterval(tick,250);tick()}
+$('tm-pause').onclick=function(){if(TM.run){TM.left=(TM.end-Date.now())/1000;TM.run=false;clearInterval(TM.int);this.textContent='Continuar'}else{TM.end=Date.now()+TM.left*1000;TM.run=true;TM.int=setInterval(tick,250);this.textContent='Pausar'}tick()};
+$('tm-stop').onclick=function(){clearInterval(TM.int);TM.run=false;$('timerbar').hidden=true};
+
+/* ---------- wake lock ---------- */
+var lock=null,wantLock=false;
+function setLock(on){wantLock=on;$('wake').setAttribute('aria-checked',String(on));
+  if(on){try{navigator.wakeLock.request('screen').then(function(l){lock=l;$('wake-note').textContent='Ativa enquanto o app estiver aberto'}).catch(function(){$('wake-note').textContent='O navegador não permitiu. Ajuste o bloqueio automático do iPhone';$('wake').setAttribute('aria-checked','false');wantLock=false})}catch(e){$('wake-note').textContent='Não disponível neste navegador';$('wake').setAttribute('aria-checked','false');wantLock=false}}
+  else{try{lock&&lock.release()}catch(e){}lock=null;$('wake-note').textContent='Para cozinhar sem a tela apagar'}}
+$('wake').onclick=function(){setLock(!wantLock)};
+document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible'&&wantLock)setLock(true)});
+
+/* ---------- routing ---------- */
+var TABS=['plano','compras','receitas','montagem','ajuda'],TTL={plano:'Cannoli',compras:'Compras',receitas:'Receitas',montagem:'Montagem',ajuda:'Guia'};
+function show(t){if(TABS.indexOf(t)<0)t='plano';
+  TABS.forEach(function(x){$('v-'+x).hidden=x!==t});
+  Array.prototype.forEach.call(document.querySelectorAll('.tabs a'),function(a){if(a.dataset.tab===t)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current')});
+  if(t==='receitas')renderRecipe();
+  window.scrollTo(0,0)}
+function go(t){if(location.hash==='#'+t)show(t);else location.hash=t}
+window.addEventListener('hashchange',function(){show(location.hash.slice(1))});
+
+renderHelp();all();show(location.hash.slice(1));
+})();
+</script>
+
+</body>
+</html>
