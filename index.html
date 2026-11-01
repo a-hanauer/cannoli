@@ -166,6 +166,7 @@ main{padding-bottom:calc(var(--tab-h) + env(safe-area-inset-bottom,0px) + 90px)}
 .step:last-child{border-bottom:0}
 .step .num{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-family:var(--display);font-weight:700;font-size:16px;color:var(--bg);background:currentColor;border:0;padding:0;position:relative}
 .step .num span{color:var(--bg)}
+.step.c1 .num{background:var(--p1)} .step.c2 .num{background:var(--p2)} .step.c3 .num{background:var(--p3)}
 .step[data-done="true"] .num{background:var(--surface-2)}
 .step[data-done="true"] .num span{color:var(--muted)}
 .step[data-done="true"] .txt{opacity:.5}
@@ -345,7 +346,7 @@ details.acc .in{padding:0 16px 16px;display:flex;flex-direction:column;gap:10px;
   <div class="sec">
     <div class="eyebrow">Fase 3 · na hora de servir</div>
     <h2 class="h2">Montagem</h2>
-    <p class="lead">Recheie no máximo 30 min antes de comer. Cada cannolo leva de 30 a 35 g de recheio.</p>
+    <p class="lead">Recheie no máximo 30 min antes de comer. Cada cannolo leva de 40 a 45 g de recheio.</p>
   </div>
   <div class="card steps" id="mont-steps"></div>
   <div class="sec">
@@ -392,29 +393,36 @@ var CHEV='<svg width="16" height="16" viewBox="0 0 16 16"><path d="M6 3.5l4.5 4.
 
 /* ---------- quantities ---------- */
 function hasR(){return S.fill!=='creme'} function hasC(){return S.fill!=='ricota'}
-function fC(){return S.n/12} // casca + finalização
-function fR(){return S.fill==='ambos'?S.n/24:S.n/12}
-function fCr(){return S.fill==='ambos'?S.n/24:S.n/12}
+// Massa: 250 g de farinha rendem ~24 cascas (discos de 10 cm, 1 a 1,5 mm). Lote mínimo: 12 cascas.
+function shells(){return Math.max(12,S.n)}
+function fC(){return shells()/24}
+// Finalização: por cannolo (base 12)
+function fF(){return S.n/12}
+// Recheios: base para 12 cannoli. Lote mínimo de meia receita (6 cannoli): menos que isso não escorre nem cozinha bem.
+function perFill(){return S.fill==='ambos'?S.n/2:S.n}
+function fR(){return Math.max(.5,perFill()/12)}
+function fCr(){return Math.max(.5,perFill()/12)}
 function rnd(v){return v<30?Math.round(v):v<200?Math.round(v/5)*5:Math.round(v/10)*10}
 function frac(v){var w=Math.floor(v+1e-9),r=Math.round((v-w)*4)/4,f={0:'',0.25:'¼',0.5:'½',0.75:'¾'}[r];if(r===1){w++;f=''}return (w?w:'')+(f||'')||'0'}
-function eggs(v){return Math.max(.5,Math.round(v*2)/2)}
+function eggG(){return 50*fC()} // 1 ovo grande sem casca ≈ 50 g
+function eggTxt(g){var u=g/50;return Math.abs(u-Math.round(u))<.05?(Math.round(u)===1?'1 ovo':Math.round(u)+' ovos'):('≈ '+frac(u)+' ovo')}
 function q(v,u){if(u==='g'||u==='ml')return rnd(v)+' '+u;return v}
 
-function cascaIng(){var f=fC(),e=eggs(f);return[
+function cascaIng(){var f=fC(),g=eggG();return[
   {n:'Farinha de trigo',q:q(250*f,'g')},
   {n:'Açúcar',q:q(25*f,'g')},
   {n:'Cacau em pó 100%',q:q(5*f,'g'),s:'Opcional. Dá cor e um fundo amargo'},
   {n:'Sal',q:'1 pitada'},
   {n:'Banha gelada',q:q(30*f,'g'),s:'Ou manteiga sem sal'},
-  {n:e===1?'Ovo grande':'Ovos grandes',q:frac(e),s:e%1?'Bata 1 ovo e use metade':''},
-  {n:'Vinho branco seco',q:q(60*f,'ml'),s:'Com Marsala, use '+rnd(75*f)+' ml dele no lugar do vinho e do vinagre'},
-  {n:'Vinagre de vinho branco',q:q(15*f,'ml')},
+  {n:'Ovo batido',q:rnd(g)+' g',s:eggTxt(g)+' grande. Bata e pese'},
+  {n:'Vinho branco seco',q:q(60*f,'ml'),s:'Ou a mesma quantidade de Marsala'},
+  {n:'Vinagre de vinho branco',q:q(10*f,'ml')},
   {n:'Clara para selar',q:'1'},
   {n:'Banha ou óleo para fritar',q:'~1 kg / 1 L',s:'Depende do tamanho da panela, não da receita'}]}
 function ricotaIng(){var f=fR();return[
   {n:'Ricota fresca',q:q(500*f,'g'),s:'De ovelha, se achar. Senão, de vaca, a mais fresca e úmida'},
-  {n:'Açúcar de confeiteiro',q:q(100*f,'g')},
-  {n:'Gotas de chocolate meio amargo',q:q(50*f,'g'),s:'As menores que achar'},
+  {n:'Açúcar de confeiteiro',q:q(150*f,'g'),s:'Prove e ajuste. As receitas sicilianas vão de 150 a 200 g por 500 g de ricota'},
+  {n:'Gotas de chocolate meio amargo',q:q(70*f,'g'),s:'As menores que achar'},
   {n:'Casca de laranja cristalizada',q:q(40*f,'g'),s:'Picadinha'},
   {n:'Canela em pó',q:'1 pitada',s:'Opcional'}]}
 function cremeIng(){var f=fCr(),choc=S.flavor==='choc',L=[
@@ -424,9 +432,9 @@ function cremeIng(){var f=fCr(),choc=S.flavor==='choc',L=[
   {n:'Amido de milho',q:q(45*f,'g')},
   {n:'Sal',q:'1 pitada'}];
   if(choc)L.splice(4,0,{n:'Chocolate meio amargo picado',q:q(70*f,'g')});
-  else{L.splice(4,0,{n:'Casca de limão-siciliano',q:(f>1.5?'2':'1')+' un.',s:'Em tiras, sem a parte branca'});L.splice(5,0,{n:'Extrato de baunilha',q:frac(Math.max(.25,f))+' c. chá',s:'Opcional'})}
+  else{L.splice(4,0,{n:'Casca de limão-siciliano',q:Math.max(1,Math.ceil(f/1.5))+' un.',s:'Em tiras, sem a parte branca'});L.splice(5,0,{n:'Extrato de baunilha',q:frac(Math.max(.25,f))+' c. chá',s:'Opcional'})}
   return L}
-function finIng(){var f=fC();return[
+function finIng(){var f=fF();return[
   {n:'Pistache sem sal',q:q(30*f,'g'),s:'Picado, para as pontas'},
   {n:'Casca de laranja cristalizada',q:q(20*f,'g'),s:'Em tiras, para as pontas'},
   {n:'Cerejas cristalizadas',q:Math.ceil(S.n/2)+' un.',s:'Opcional. Meia por cannolo'},
@@ -434,8 +442,8 @@ function finIng(){var f=fC();return[
 
 /* ---------- shopping ---------- */
 function shopping(){
-  var f=fC(),r=fR(),c=fCr(),choc=S.flavor==='choc',R=hasR(),C=hasC();
-  var ovos=Math.ceil(eggs(f))+(C?Math.max(1,Math.round(4*c)):1);
+  var f=fC(),ff=fF(),r=fR(),c=fCr(),choc=S.flavor==='choc',R=hasR(),C=hasC();
+  var ovos=Math.ceil(eggG()/50-.05)+(C?Math.max(1,Math.round(4*c)):1);
   var G=[];
   G.push({t:'Laticínios e ovos',items:[
     R&&{id:'ricota',n:'Ricota fresca',q:q(500*r,'g'),s:'De ovelha, se achar. Evite a de longa validade, que é mais seca'},
@@ -448,19 +456,19 @@ function shopping(){
     C&&{id:'amido',n:'Amido de milho',q:q(45*c,'g')},
     {id:'cacau',n:'Cacau em pó 100%',q:q(5*f,'g'),s:'Opcional'},
     {id:'sal',n:'Sal',q:'1 pitada'},
-    {id:'vinagre',n:'Vinagre de vinho branco',q:q(15*f,'ml')},
+    {id:'vinagre',n:'Vinagre de vinho branco',q:q(10*f,'ml')},
     {id:'oleo',n:'Óleo neutro',q:'~1 L',s:'Só se não for fritar na banha'}]});
   G.push({t:'Confeitaria',items:[
-    {id:'confeiteiro',n:'Açúcar de confeiteiro',q:R?q(100*r,'g')+' + extra':'a gosto'},
-    R&&{id:'gotas',n:'Gotas de chocolate meio amargo',q:q(50*r,'g')},
+    {id:'confeiteiro',n:'Açúcar de confeiteiro',q:R?q(150*r,'g')+' + extra':'a gosto'},
+    R&&{id:'gotas',n:'Gotas de chocolate meio amargo',q:q(70*r,'g')},
     C&&choc&&{id:'choc',n:'Chocolate meio amargo',q:q(70*c,'g')},
-    {id:'laranja',n:'Casca de laranja cristalizada',q:q((R?40*r:0)+20*f,'g'),s:'Só casca de laranja, não a fruta cristalizada mista'},
-    {id:'pistache',n:'Pistache sem sal',q:q(30*f,'g')},
+    {id:'laranja',n:'Casca de laranja cristalizada',q:q((R?40*r:0)+20*ff,'g'),s:'Só casca de laranja, não a fruta cristalizada mista'},
+    {id:'pistache',n:'Pistache sem sal',q:q(30*ff,'g')},
     {id:'cereja',n:'Cerejas cristalizadas',q:Math.ceil(S.n/2)+' un.',s:'Opcional'},
     R&&{id:'canela',n:'Canela em pó',q:'1 pitada',s:'Opcional'},
     C&&!choc&&{id:'baunilha',n:'Extrato de baunilha',q:frac(Math.max(.25,c))+' c. chá',s:'Opcional'}]});
   G.push({t:'Hortifrúti e bebidas',items:[
-    C&&!choc&&{id:'limao',n:'Limão-siciliano',q:(c>1.5?'2':'1')+' un.'},
+    C&&!choc&&{id:'limao',n:'Limão-siciliano',q:Math.max(1,Math.ceil(c/1.5))+' un.'},
     {id:'vinho',n:'Vinho branco seco',q:q(60*f,'ml'),s:'Ou Marsala, se achar'}]});
   G.forEach(function(g){g.items=g.items.filter(Boolean)});
   return G.filter(function(g){return g.items.length});
@@ -472,14 +480,14 @@ var STEPS={
   {h:'Massa',ph:1,list:[
    {t:'Misture os secos',p:'Em uma tigela, junte a farinha, o açúcar, o cacau e o sal.'},
    {t:'Incorpore a banha',d:'3 min',p:'Junte a banha gelada em pedaços e esfregue com a ponta dos dedos até virar uma farofa fina, sem pedaços visíveis.'},
-   {t:'Junte os líquidos',p:'Bata o ovo com o vinho e o vinagre. Despeje aos poucos na farofa, misturando com um garfo. Pare quando a massa juntar.'},
+   {t:'Junte os líquidos',p:'Misture o ovo batido e pesado com o vinho e o vinagre. Despeje aos poucos na farofa, misturando com um garfo. Pare quando a massa juntar.'},
    {t:'Sove',d:'8 a 10 min',tm:600,p:'Até ficar lisa, firme e elástica, como massa de pastel. Se esfarelar, junte 1 colher de sopa de vinho. Se grudar, polvilhe farinha.'},
    {t:'Descanse',d:'mín. 1 h · ideal a noite toda',p:'Faça uma bola, embrulhe bem em filme plástico e leve à geladeira.'}]},
   {h:'Abrir e enrolar',ph:2,diagram:true,list:[
    {t:'Tire da geladeira',d:'30 min',tm:1800,p:'Deixe a massa em temperatura ambiente antes de abrir.'},
    {t:'Divida e abra',p:'Corte em 2 partes e mantenha uma embrulhada. Abra a outra até 1 a 1,5 mm, quase dá para ver a bancada. No cilindro, vá do ponto mais largo até o penúltimo, dobrando ao meio nas primeiras passadas.'},
-   {t:'Corte os discos',p:'Use o cortador de 10 cm. Passe o rolo uma vez em um só sentido para deixar o disco oval (~12 cm).'},
-   {t:'Enrole',p:'Unte os tubos de leve. Ponha o tubo atravessado no meio da oval, no sentido da largura, e dobre as duas pontas por cima, com cerca de 1 cm de sobreposição.'},
+   {t:'Corte os discos',p:'Use o cortador de 10 cm. Cada disco pesa cerca de 12 g.'},
+   {t:'Enrole',p:'Unte os tubos de leve. Ponha o tubo no meio do disco e dobre uma borda e depois a outra por cima dele. As bordas se sobrepõem 2 a 4 cm no meio, e é assim mesmo.'},
    {t:'Sele',p:'Pincele a clara só onde a massa se sobrepõe e aperte bem. Se a clara encostar no metal, a casca gruda no tubo.'},
    {t:'Sobras',d:'10 min',tm:600,p:'Junte as aparas, deixe descansar 10 min e abra de novo. Só uma vez, porque depois a massa endurece.'}]},
   {h:'Fritar',ph:2,list:[
@@ -534,7 +542,7 @@ function dur(m){m=Math.round(m);var h=Math.floor(m/60),r=m%60;return h?(h+' h'+(
 function r5(v){return Math.round(v/5)*5}
 function plan(){
   var v=mins(S.start),T=1440+mins(S.serve),R=hasR(),C=hasC();
-  var fry=Math.max(15,r5(S.n*10/3)),roll=Math.max(15,r5(S.n*2.5));
+  var fry=Math.max(15,r5(shells()*10/3)),roll=Math.max(15,r5(shells()*2.5));
   var it=[],t=v,mass,cr,ric=v;
   if(R){it.push({t:t,ph:1,d:10,h:'Pôr a ricota para escorrer',p:'No pano, dentro da peneira, com peso leve. Geladeira.',go:'ricota',fr:'ricota'});t+=10}
   mass=t;it.push({t:t,ph:1,d:25,h:'Fazer a massa da casca',p:'Misturar, sovar e embrulhar em filme. Geladeira.',go:'casca',fr:'massa'});t+=25;
@@ -576,12 +584,12 @@ function renderPlan(){
 function ingRows(L){return L.map(function(i){return '<div class="row"><div class="n"><span>'+i.n+'</span>'+(i.s?'<small>'+i.s+'</small>':'')+'</div><div class="q">'+i.q+'</div></div>'}).join('')}
 function stepHTML(key,i,s,ph){var done=!!S.steps[key];
   return '<div class="step c'+ph+'" data-done="'+done+'"><button type="button" class="num" data-step="'+key+'" aria-pressed="'+done+'" aria-label="Marcar passo '+(i+1)+' como feito"><span>'+(done?'✓':(i+1))+'</span></button><div class="txt"><b>'+s.t+'</b><p>'+s.p+'</p>'+((s.d||s.tm)?'<div class="tools">'+(s.d?'<span class="pill">'+s.d+'</span>':'')+(s.tm?'<button type="button" class="timer-btn" data-timer="'+s.tm+'" data-label="'+s.t+'"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="7" cy="8" r="5"/><path d="M7 5.5V8l1.6 1.2M5.5 1.5h3"/></svg>Timer '+(s.tm>=60?(s.tm/60)+' min':s.tm+' s')+'</button>':'')+'</div>':'')+'</div></div>'}
-var DIAGRAM='<div class="diagram"><svg viewBox="0 0 600 190" aria-label="Disco, oval com o tubo atravessado e massa enrolada"><defs><marker id="ar" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L8 4L0 8z" fill="var(--muted)"/></marker><marker id="ar2" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L8 4L0 8z" fill="var(--p2)"/></marker></defs>'+
- '<g font-family="Figtree,sans-serif" font-size="15" font-weight="700" fill="var(--fg)"><text x="30" y="22">1 Disco</text><text x="222" y="22">2 Tubo atravessado</text><text x="432" y="22">3 Enrolar e selar</text></g>'+
+var DIAGRAM='<div class="diagram"><svg viewBox="0 0 600 190" aria-label="Disco, tubo no meio do disco e massa enrolada"><defs><marker id="ar" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L8 4L0 8z" fill="var(--muted)"/></marker><marker id="ar2" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L8 4L0 8z" fill="var(--p2)"/></marker></defs>'+
+ '<g font-family="Figtree,sans-serif" font-size="15" font-weight="700" fill="var(--fg)"><text x="30" y="22">1 Disco</text><text x="222" y="22">2 Tubo no meio</text><text x="432" y="22">3 Enrolar e selar</text></g>'+
  '<circle cx="80" cy="95" r="50" fill="var(--p2s)" stroke="var(--p2)" stroke-width="1.5"/><text x="80" y="176" text-anchor="middle" font-family="Figtree,sans-serif" font-size="13" fill="var(--muted)">10 cm · 1 a 1,5 mm</text>'+
  '<path d="M150 95h34" stroke="var(--muted)" stroke-width="1.6" marker-end="url(#ar)"/><path d="M362 95h34" stroke="var(--muted)" stroke-width="1.6" marker-end="url(#ar)"/>'+
- '<ellipse cx="275" cy="95" rx="38" ry="58" fill="var(--p2s)" stroke="var(--p2)" stroke-width="1.5"/><rect x="216" y="85" width="118" height="20" rx="4" fill="var(--surface-2)" stroke="var(--muted)" stroke-width="1.2"/>'+
- '<path d="M275 42v18" stroke="var(--p2)" stroke-width="1.8" marker-end="url(#ar2)"/><path d="M275 148v-18" stroke="var(--p2)" stroke-width="1.8" marker-end="url(#ar2)"/><text x="275" y="176" text-anchor="middle" font-family="Figtree,sans-serif" font-size="13" fill="var(--muted)">dobre as duas pontas</text>'+
+ '<circle cx="275" cy="95" r="50" fill="var(--p2s)" stroke="var(--p2)" stroke-width="1.5"/><rect x="216" y="85" width="118" height="20" rx="4" fill="var(--surface-2)" stroke="var(--muted)" stroke-width="1.2"/>'+
+ '<path d="M275 50v20" stroke="var(--p2)" stroke-width="1.8" marker-end="url(#ar2)"/><path d="M275 140v-20" stroke="var(--p2)" stroke-width="1.8" marker-end="url(#ar2)"/><text x="275" y="176" text-anchor="middle" font-family="Figtree,sans-serif" font-size="13" fill="var(--muted)">dobre as duas bordas</text>'+
  '<g transform="translate(500 95) rotate(-12)"><rect x="-84" y="-10" width="168" height="20" rx="4" fill="var(--surface-2)" stroke="var(--muted)" stroke-width="1.2"/><path d="M-58 -26C-30 -30 30 -30 58 -26L58 26C30 30 -30 30 -58 26Z" fill="var(--p2s)" stroke="var(--p2)" stroke-width="1.5"/><path d="M-40 -27C-14 -6 14 6 40 27" fill="none" stroke="var(--warn)" stroke-width="5" stroke-linecap="round"/></g>'+
  '<text x="500" y="176" text-anchor="middle" font-family="Figtree,sans-serif" font-size="13" font-weight="700" fill="var(--warn)">clara só na emenda</text></svg></div>';
 
@@ -591,10 +599,10 @@ function renderRecipe(){
   $('r-title').textContent=RT[k]+(k==='creme'?(S.flavor==='choc'?' de chocolate':' de limão'):'');
   segSel('seg-recipe',k);
   var ing=k==='casca'?cascaIng():k==='ricota'?ricotaIng():cremeIng();
-  var scaleTxt=k==='casca'?S.n+' cascas':((S.fill==='ambos'?S.n/2:S.n)+' cannoli'+(S.fill==='ambos'?' (metade dos '+S.n+')':''));
+  var scaleTxt=k==='casca'?shells()+' cascas':(Math.max(6,perFill())+' cannoli'+(S.fill==='ambos'?' (metade)':''));
   var off=(k==='ricota'&&!hasR())||(k==='creme'&&!hasC());
   if(off)h+='<p class="note">Este recheio não está no seu plano. As quantidades abaixo são para '+S.n+' cannoli. <button type="button" class="chip link" data-fill="'+k+'">Incluir no plano</button></p>';
-  if(off)scaleTxt=S.n+' cannoli';
+  if(off)scaleTxt=Math.max(6,S.n)+' cannoli';
   h+='<div class="sec"><div class="ing-head"><h3 class="h3">Ingredientes</h3><span class="eyebrow">'+scaleTxt+'</span></div><div class="card list">'+ingRows(ing)+'</div></div>';
   STEPS[k].forEach(function(st,si){
     var list=st.list.filter(function(s){return !s.v||s.v===S.flavor});
@@ -641,7 +649,7 @@ var HELP=[
   ['Casca dura e sem bolhas','Massa grossa ou gordura fria. Abra até 1 a 1,5 mm e confira os 170 °C.'],
   ['Casca encharcada','Gordura abaixo de 165 °C. Frite menos por vez.'],
   ['Escura por fora, crua por dentro','Gordura acima de 185 °C. Baixe o fogo.'],
-  ['Casca abre na fritura','Sobreposição pequena. Deixe 1 cm, use clara e aperte firme.'],
+  ['Casca abre na fritura','Emenda mal selada. Pincele clara onde as bordas se sobrepõem e aperte firme.'],
   ['Casca gruda no tubo','Tubo sem untar ou clara no metal. Desenforme ainda morna.'],
   ['Massa encolhe ao abrir','Pouco descanso. Embrulhe e espere mais 20 min.'],
   ['Recheio de ricota ralo','Ricota mal escorrida. Escorra mais e gele.'],
@@ -666,7 +674,8 @@ function renderCalc(){
   $('t-start').value=S.start;$('t-serve').value=S.serve;
   var fl={ricota:'ricota',creme:'creme',ambos:'ricota + creme'}[S.fill];
   $('chip').innerHTML=S.n+' un <i>· '+fl+'</i>';
-  $('yield').textContent=S.fill==='ambos'?('Massa para '+S.n+' cascas. Cada recheio rende '+S.n/2+' cannoli.'):('Massa para '+S.n+' cascas e recheio para '+S.n+' cannoli. Com as sobras de massa, saem 1 ou 2 cascas a mais.');
+  var sh=shells(),extra=sh>S.n?' A massa não fica boa em lote menor que 12 cascas; as que sobrarem duram 5 dias no pote.':'';
+  $('yield').textContent='Massa para '+sh+' cascas. '+(S.fill==='ambos'?('Cada recheio dá para '+Math.max(6,S.n/2)+' cannoli.'):('Recheio para '+Math.max(6,S.n)+' cannoli.'))+(perFill()<6?' O recheio não sai bem em lote menor que 6; o que sobrar dura 2 dias na geladeira.':'')+' As quantidades já têm uma pequena folga.'+extra;
 }
 function all(){renderCalc();renderPlan();renderShop();renderRecipe();renderMont();save()}
 function setN(x){S.n=Math.max(4,Math.min(48,x));all()}
