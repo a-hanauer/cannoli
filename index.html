@@ -585,7 +585,7 @@ function cascaIng(){var f=fC(),g=eggG(),L=[
   {n:'Sal',q:'1 pitada'},
   {n:'Banha gelada',q:fmtQ(30*f,'g'),s:'Ou manteiga sem sal'},
   {n:'Ovo batido',q:rnd(g)+' g',s:eggTxt(g)+' grande. Bata e pese'},
-  {n:'Vinho branco seco',q:fmtQ(60*f,'ml'),s:'Ou a mesma quantidade de Marsala'},
+  {n:'Vinho branco seco',q:fmtQ(50*f,'ml'),s:'Ou a mesma quantidade de Marsala'},
   {n:'Vinagre de vinho branco',q:fmtQ(10*f,'ml')},
   {n:'Clara para selar',q:'1'},
   {n:'Banha ou óleo para fritar',q:'~1 kg / 1 L',s:'Depende do tamanho da panela, não da receita'}])}
@@ -632,7 +632,7 @@ function shopping(){
   var T={},gem=0,ovo=0;
   function add(k,v){T[k]=(T[k]||0)+v}
   var f=fC();
-  add('farinha',250*f);add('acucar',25*f);add('banha',30*f);add('vinagre',10*f);add('vinho',60*f);add('sal',0);add('oleo',0);
+  add('farinha',250*f);add('acucar',25*f);add('banha',30*f);add('vinagre',10*f);add('vinho',50*f);add('sal',0);add('oleo',0);
   if(cacauOn())add('cacau',5*f);
   fills().forEach(function(id){var x=ff(id),p=fp(id);
     F[id].ing.forEach(function(i){
@@ -670,13 +670,13 @@ var CASCA=[
   {h:'Abrir e enrolar',ph:2,diagram:true,list:[
    {t:'Tire da geladeira',d:'30 min',tm:1800,p:'Deixe a massa em temperatura ambiente antes de abrir.'},
    {t:'Divida e abra',p:'Corte em 2 partes e mantenha uma embrulhada. Abra a outra até 1 a 1,5 mm, quase dá para ver a bancada. No cilindro, vá do ponto mais largo até o penúltimo, dobrando ao meio nas primeiras passadas.'},
-   {t:'Corte os discos',p:'Use o cortador de 10 cm. Cada disco pesa cerca de 12 g.'},
+   {t:'Corte os discos',p:'Use o cortador de 10 cm. Pese um: deve ter de 10 a 12 g. Com 15 g ou mais, a massa está grossa e a casca fica macia por dentro. Volte e abra mais.'},
    {t:'Enrole',p:'Unte os tubos de leve. Ponha o tubo no meio do disco e dobre uma borda e depois a outra por cima dele. As bordas se sobrepõem 2 a 4 cm no meio, e é assim mesmo.'},
    {t:'Sele',p:'Pincele a clara só onde a massa se sobrepõe e aperte bem. Se a clara encostar no metal, a casca gruda no tubo.'},
    {t:'Sobras',d:'10 min',tm:600,p:'Junte as aparas, deixe descansar 10 min e abra de novo. Só uma vez, porque depois a massa endurece.'}]},
   {h:'Fritar',ph:2,list:[
-   {t:'Aqueça a gordura',p:'Com pelo menos 5 cm de altura, a 170–175 °C. Durante a fritura, mantenha entre 165 e 180 °C.'},
-   {t:'Frite em levas',d:'1½ a 2 min',tm:120,p:'2 ou 3 por vez, ainda nos tubos, virando, até ficar dourado-escuro e cheio de bolhas.'},
+   {t:'Aqueça a gordura',p:'Com pelo menos 5 cm de altura, a 170 °C. Durante a fritura, mantenha entre 165 e 175 °C. Mais quente que isso, a casca escurece antes de secar por dentro.'},
+   {t:'Frite em levas',d:'2½ a 3 min',tm:180,p:'2 ou 3 por vez, ainda nos tubos, virando. Tire quando as bolhas em volta da casca diminuírem bem: é o sinal de que a água saiu. Não se guie só pela cor, que engana, principalmente na casca com cacau.'},
    {t:'Escorra',p:'Pegue pela ponta do tubo com a pinça e deixe na grade, inclinado, para a gordura escorrer de dentro.'},
    {t:'Desenforme morno',d:'30 a 60 s',p:'Segure com um pano e deslize a casca para fora. Fria, ela gruda.'},
    {t:'Esfrie os tubos',p:'Enrole de novo só em tubo frio. Em tubo quente, a massa encolhe e amolece.'},
@@ -743,7 +743,7 @@ function names(L){return L.length>1?L.slice(0,-1).join(', ')+' e '+L[L.length-1]
 function plan(){
   var v=mins(S.start),T=1440+mins(S.serve),L=fills();
   var ric=L.filter(function(id){return fam(id)==='ricota'}),cre=L.filter(function(id){return fam(id)==='creme'}),cur=L.filter(function(id){return fam(id)==='curd'});
-  var fry=Math.max(15,r5(shells()*10/3)),roll=Math.max(15,r5(shells()*2.5));
+  var fry=Math.max(15,r5(shells()*4)),roll=Math.max(15,r5(shells()*2.5));
   var it=[],W=[],t=v,mass;
   if(ric.length){var g=ric.reduce(function(s,id){return s+F[id].ing[0].v*ff(id)},0);
     it.push({t:t,ph:1,d:10,h:'Pôr a ricota para escorrer',p:rnd(g)+' g no pano, dentro da peneira, com peso leve. Geladeira.',go:ric[0],fr:1});t+=10}
@@ -928,6 +928,7 @@ var HELP=[
   ['Onde achar','Açougues e mercados maiores','Qualquer mercado'],
   ['Depois','Coe e guarde na geladeira','Coe e reuse uma ou duas vezes']].map(function(r){return '<div><b>'+r[0]+'</b><div class="cols"><div><em>Banha</em><p>'+r[1]+'</p></div><div><em>Óleo</em><p>'+r[2]+'</p></div></div></div>'}).join('')+'</div>'},
  {h:'Se algo der errado',b:'<div class="kv">'+[
+  ['Casca macia por dentro','Massa grossa ou fritura curta. Abra até o disco de 10 cm pesar 10 a 12 g e frite a 170 °C até as bolhas diminuírem, 2½ a 3 min. Para salvar as que já fritou: 6 a 8 min no forno a 160 °C e esfriar na grade.'],
   ['Casca dura e sem bolhas','Massa grossa ou gordura fria. Abra até 1 a 1,5 mm e confira os 170 °C.'],
   ['Casca encharcada','Gordura abaixo de 165 °C. Frite menos por vez.'],
   ['Escura por fora, crua por dentro','Gordura acima de 185 °C. Baixe o fogo.'],
