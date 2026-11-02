@@ -235,6 +235,11 @@ main{padding-bottom:calc(var(--tab-h) + env(safe-area-inset-bottom,0px) + 90px)}
 .fc-h small{display:block;font-size:12.5px;color:var(--muted)}
 .fillcard dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:14px;border-top:1px solid var(--line);padding-top:10px}
 .fillcard dt{color:var(--muted)} .fillcard dd{margin:0;font-weight:600}
+.jump{display:flex;flex-direction:column;gap:6px}
+.jump a{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;background:var(--surface-2);color:var(--fg);text-decoration:none;font-weight:600;font-size:15px}
+.fill-h{display:flex;align-items:center;gap:12px;padding-top:14px;border-top:2px solid var(--fg);margin-top:6px}
+.fill-h small{display:block;font-size:11.5px;letter-spacing:1.3px;text-transform:uppercase;font-weight:700;color:var(--muted)}
+.fill-h h3{font-family:var(--display);font-size:24px;line-height:1.1}
 .small-note{font-size:13px;color:var(--muted);padding:0 4px}
 
 /* help */
@@ -437,11 +442,15 @@ var CHEV='<svg width="16" height="16" viewBox="0 0 16 16"><path d="M6 3.5l4.5 4.
    RECHEIOS — quantidades para 12 cannoli (40 a 45 g cada)
    ========================================================= */
 var COW='<b>Se a ricota de vaca continuar seca:</b> junte de 1 a 2 colheres de sopa de creme de leite fresco. Fica mais cremosa, mas é um ajuste, não faz parte da receita tradicional.';
-var CREME_BASE=function(o){return [
-  {k:'leite',n:'Leite integral',v:o.leite||500,u:'ml'},
-  {k:'gema',n:'Gemas',v:4,u:'gema'},
-  {k:'acucar',n:'Açúcar',v:o.acucar||120,u:'g'},
-  {k:'amido',n:'Amido de milho',v:o.amido||45,u:'g'},
+// Crema pasticcera de confeitaria: leite + creme de leite, muitas gemas, pouco amido (metade de milho, metade de arroz).
+// Proporção por litro de líquido (Montersino): 800 leite, 200 creme, 300 g gemas, 300 g açúcar, 35 g amido de milho, 35 g de arroz.
+var CREME_BASE=function(o){var am=o.amido||14;return [
+  {k:'leite',n:'Leite integral',v:o.leite||320,u:'ml',s:'Fresco, de garrafa ou saquinho, se achar'},
+  {k:'creme',n:'Creme de leite fresco',v:80,u:'ml',s:'35% de gordura, o de geladeira. Não use o de caixinha'},
+  {k:'gema',n:'Gemas',v:6,u:'gema',g:18},
+  {k:'acucar',n:'Açúcar',v:o.acucar||110,u:'g'},
+  {k:'amido',n:'Amido de milho',v:am,u:'g'},
+  {k:'amidoarroz',n:'Amido de arroz',v:am,u:'g',s:'Deixa o creme mais sedoso. Sem ele, use o dobro de amido de milho'},
   {k:'sal',n:'Sal',v:0,u:'pitada'}].concat(o.extra||[])};
 var F={
  classica:{name:'Ricota clássica',short:'Clássica',group:'sic',base:'Ricota',tag:'Tradicional · Palermo',cacau:true,
@@ -482,12 +491,12 @@ var F={
    pontas:{t:'Pistache picado',items:[{k:'pistache',v:30,u:'g'}]}},
  cr_pist:{name:'Creme de pistache',short:'Creme pistache',group:'sic',base:'Creme',tag:'Tradicional · Sicília',cacau:false,
    desc:'Crema pasticcera com pasta de pistache. Verde, doce e perfumada.',
-   ing:CREME_BASE({acucar:100,amido:40,extra:[{k:'pastapist',n:'Pasta de pistache',v:80,u:'g',s:'100% pistache'}]}),
+   ing:CREME_BASE({acucar:100,extra:[{k:'pastapist',n:'Pasta de pistache',v:65,u:'g',s:'100% pistache, sem açúcar'}]}),
    heat:'plain',post:'Fora do fogo, junte a pasta de pistache e bata até o creme ficar liso e verde.',
    pontas:{t:'Pistache picado',items:[{k:'pistache',v:30,u:'g'}]}},
  cr_baun:{name:'Creme de baunilha',short:'Baunilha',group:'cr',base:'Creme',tag:'Variação · clássico',cacau:false,
    desc:'A crema pasticcera clássica, só baunilha.',
-   ing:CREME_BASE({extra:[{k:'baunilha',n:'Baunilha',v:1,u:'cchá',s:'Extrato. Ou ½ fava, raspada'}]}),
+   ing:CREME_BASE({extra:[{k:'fava',n:'Fava de baunilha',v:.5,u:'fava',s:'Abra e raspe as sementes. Na falta, 1 c. chá de extrato puro'}]}),
    heat:'infuse',infuse:'a baunilha',
    pontas:{t:'Pistache picado',items:[{k:'pistache',v:30,u:'g'}]}},
  cr_limao:{name:'Creme de limão-siciliano',short:'Limão',group:'cr',base:'Creme',tag:'Variação · crema al limone',cacau:false,
@@ -496,26 +505,24 @@ var F={
    heat:'infuse',infuse:'as tiras de casca de limão',
    pontas:{t:'Raspas de limão, do mesmo limão',items:[]}},
  cr_choc:{name:'Creme de chocolate',short:'Creme choc.',group:'cr',base:'Creme',tag:'Variação · crema al cioccolato',cacau:true,
-   desc:'Crema pasticcera com chocolate meio amargo derretido.',
-   ing:CREME_BASE({acucar:100,extra:[{k:'chocolate',n:'Chocolate meio amargo picado',v:70,u:'g'}]}),
+   desc:'Crema pasticcera com chocolate 60 a 70% derretido.',
+   ing:CREME_BASE({acucar:90,extra:[{k:'chocolate70',n:'Chocolate 60 a 70% cacau',v:70,u:'g',s:'Picado. Barra de boa qualidade, não gotas'}]}),
    heat:'plain',post:'Fora do fogo, junte o chocolate picado e mexa até derreter.',
-   pontas:{t:'Chocolate raspado',items:[{k:'chocolate',v:20,u:'g'}]}},
+   pontas:{t:'Chocolate raspado',items:[{k:'chocolate70',v:20,u:'g'}]}},
  cr_cafe:{name:'Creme de café',short:'Café',group:'cr',base:'Creme',tag:'Variação · crema al caffè',cacau:true,
    desc:'Crema pasticcera feita com espresso no leite.',
-   ing:CREME_BASE({leite:420,extra:[{k:'cafe',n:'Café espresso',v:80,u:'ml',s:'Cerca de 3 doses. Ou café coado bem forte'}]}),
+   ing:CREME_BASE({leite:260,extra:[{k:'cafe',n:'Café espresso',v:60,u:'ml',s:'2 doses, feito na hora. Entra no lugar de parte do leite'}]}),
    heat:'coffee',
-   pontas:{t:'Chocolate raspado',items:[{k:'chocolate',v:20,u:'g'}]}},
+   pontas:{t:'Chocolate raspado',items:[{k:'chocolate70',v:20,u:'g'}]}},
  cr_laranja:{name:'Creme de laranja',short:'Laranja',group:'cr',base:'Creme',tag:'Variação · crema all’arancia',cacau:true,
    desc:'Crema pasticcera com suco e casca de laranja. Combina com a casca de cacau.',
-   ing:[{k:'leite',n:'Leite integral',v:430,u:'ml'},{k:'laranjasuco',n:'Suco de laranja',v:70,u:'ml',s:'Coado'},
-        {k:'laranja',n:'Casca de laranja',v:1,u:'un',s:'Em tiras, sem a parte branca'},
-        {k:'gema',n:'Gemas',v:4,u:'gema'},{k:'acucar',n:'Açúcar',v:130,u:'g'},
-        {k:'amido',n:'Amido de milho',v:50,u:'g',s:'Um pouco mais que os outros cremes, por causa do suco'},{k:'sal',n:'Sal',v:0,u:'pitada'}],
+   ing:CREME_BASE({leite:265,acucar:115,amido:16,extra:[{k:'laranjasuco',n:'Suco de laranja',v:55,u:'ml',s:'Espremido na hora e coado. Entra no lugar de parte do leite'},
+        {k:'laranja',n:'Casca de laranja',v:1,u:'un',s:'Em tiras, sem a parte branca'}]}),
    heat:'cold',post:'Tire as tiras de casca.',
    pontas:{t:'Laranja cristalizada em tiras',items:[{k:'laranjacrist',v:20,u:'g'}]}},
  cr_zaba:{name:'Creme de zabaione',short:'Zabaione',group:'cr',base:'Creme',tag:'Variação · com Marsala',cacau:false,
    desc:'Crema pasticcera com Marsala, no sabor do zabaione. Leva álcool.',
-   ing:CREME_BASE({leite:400,extra:[{k:'marsala',n:'Marsala',v:100,u:'ml',s:'Ou vinho do Porto ou moscatel'}]}),
+   ing:CREME_BASE({leite:240,extra:[{k:'marsala',n:'Marsala',v:80,u:'ml',s:'Ou vinho do Porto ou moscatel. Entra no lugar de parte do leite'}]}),
    heat:'plain',zaba:true,
    pontas:{t:'Pistache picado',items:[{k:'pistache',v:30,u:'g'}]},
    note:'<b>Álcool:</b> parte do Marsala evapora no cozimento, mas não todo.'},
@@ -565,6 +572,7 @@ function fmtQ(v,u){
   if(u==='gema'||u==='ovo')return String(Math.max(1,Math.round(v)));
   if(u==='un')return Math.max(1,Math.ceil(v-.01))+' un.';
   if(u==='cchá')return frac(Math.max(.25,v))+' c. chá';
+  if(u==='fava')return frac(Math.max(.25,v))+' fava';
   return v}
 function eggG(){return 50*fC()}
 function eggTxt(g){var u=g/50;return Math.abs(u-Math.round(u))<.05?(Math.round(u)===1?'1 ovo':Math.round(u)+' ovos'):('≈ '+frac(u)+' ovo')}
@@ -583,6 +591,7 @@ function cascaIng(){var f=fC(),g=eggG(),L=[
   {n:'Banha ou óleo para fritar',q:'~1 kg / 1 L',s:'Depende do tamanho da panela, não da receita'}])}
 function fillIng(id){var f=ff(id);return F[id].ing.map(function(i){
   if(i.k==='limao'&&i.v===0)return {n:i.n,q:'—',s:i.s};
+  if(i.g){var c=Math.max(1,Math.round(i.v*f));return {n:i.n,q:String(c),s:'Cerca de '+rnd(c*i.g)+' g. Pese, se puder'}}
   return {n:i.n,q:fmtQ(i.v*f,i.u),s:i.s}})}
 
 /* ---------- compras ---------- */
@@ -590,21 +599,25 @@ var SHOP={
  ricota:{n:'Ricota fresca',sec:0,u:'g',s:'De ovelha, se achar. Evite a de longa validade, que é mais seca'},
  mascarpone:{n:'Mascarpone',sec:0,u:'g'},
  leite:{n:'Leite integral',sec:0,u:'ml'},
+ creme:{n:'Creme de leite fresco (35%)',sec:0,u:'ml',s:'O de geladeira, não o de caixinha'},
  manteiga:{n:'Manteiga sem sal',sec:0,u:'g'},
  banha:{n:'Banha suína',sec:0,u:'g',s:'Para a massa. Mais ~1 kg se for fritar nela'},
  farinha:{n:'Farinha de trigo',sec:1,u:'g'},
  acucar:{n:'Açúcar refinado',sec:1,u:'g'},
  amido:{n:'Amido de milho',sec:1,u:'g'},
+ amidoarroz:{n:'Amido de arroz',sec:1,u:'g',s:'Lojas de produtos naturais ou confeitaria'},
  cacau:{n:'Cacau em pó 100%',sec:1,u:'g'},
  cafe:{n:'Café espresso',sec:1,u:'ml',s:'Ou café coado bem forte'},
  sal:{n:'Sal',sec:1,u:'pitada'},
  canela:{n:'Canela em pó',sec:1,u:'pitada',s:'Opcional'},
  baunilha:{n:'Extrato de baunilha',sec:1,u:'cchá'},
+ fava:{n:'Fava de baunilha',sec:2,u:'fava'},
  vinagre:{n:'Vinagre de vinho branco',sec:1,u:'ml'},
  oleo:{n:'Óleo neutro',sec:1,u:'txt',q:'~1 L',s:'Só se não for fritar na banha'},
  confeiteiro:{n:'Açúcar de confeiteiro',sec:2,u:'g',plus:' + polvilhar'},
  gotas:{n:'Gotas de chocolate meio amargo',sec:2,u:'g'},
  chocolate:{n:'Chocolate meio amargo',sec:2,u:'g'},
+ chocolate70:{n:'Chocolate 60 a 70% cacau',sec:2,u:'g',s:'Em barra, de boa qualidade'},
  laranjacrist:{n:'Casca de laranja cristalizada',sec:2,u:'g',s:'Só casca de laranja, não a fruta cristalizada mista'},
  pistache:{n:'Pistache sem sal',sec:2,u:'g'},
  pastapist:{n:'Pasta de pistache 100%',sec:2,u:'g',s:'Lojas de confeitaria'},
@@ -638,7 +651,7 @@ function shopping(){
   var G=SECS.map(function(t){return {t:t,items:[]}});
   G[0].items.push({id:'ovos',n:'Ovos grandes',q:eggs+' un.',s:eggNote.join('. ')});
   Object.keys(SHOP).forEach(function(k){if(!(k in T))return;var d=SHOP[k],v=T[k],q;
-    if(d.u==='txt')q=d.q;else if(d.u==='un')q=Math.max(1,Math.ceil(v-.01))+' un.';else q=fmtQ(v,d.u);
+    if(d.u==='txt')q=d.q;else if(d.u==='un')q=Math.max(1,Math.ceil(v-.01))+' un.';else if(d.u==='fava')q=Math.max(1,Math.ceil(v-.01))+(Math.ceil(v-.01)>1?' favas':' fava');else q=fmtQ(v,d.u);
     if(d.plus)q+=d.plus;
     G[d.sec].items.push({id:k,n:d.n,q:q,s:d.s})});
   return G.filter(function(g){return g.items.length});
@@ -685,19 +698,19 @@ function stagesFor(id){
   }
   if(k==='creme'){
     var L=[];
-    if(f.heat==='infuse')L.push({t:'Infusione o leite',d:'10 min',tm:600,p:'Aqueça o leite com '+f.infuse+' até quase ferver. Desligue, tampe e espere 10 min. Depois tire '+(f.infuse.indexOf('casca')>-1?'a casca':'a fava, se usou')+'.'});
-    if(f.heat==='plain')L.push({t:'Aqueça o leite',p:'Aqueça o leite até quase ferver e desligue.'});
-    if(f.heat==='coffee')L.push({t:'Aqueça o leite com o café',p:'Aqueça o leite com o espresso, sem deixar ferver, e desligue.'});
+    if(f.heat==='infuse')L.push({t:'Infusione o leite e o creme',d:'15 min',tm:900,p:'Aqueça o leite e o creme de leite com '+f.infuse+' até quase ferver. Desligue, tampe e espere 15 min. Depois tire '+(f.infuse.indexOf('casca')>-1?'as tiras de casca':'a fava (as sementes ficam)')+'.'});
+    if(f.heat==='plain')L.push({t:'Aqueça o leite e o creme',p:'Aqueça o leite com o creme de leite até quase ferver e desligue.'});
+    if(f.heat==='coffee')L.push({t:'Aqueça o leite com o café',p:'Aqueça o leite e o creme de leite com o espresso, sem deixar ferver, e desligue.'});
     if(f.heat==='cold'){
-      L.push({t:'Prepare as gemas',p:'Bata as gemas com o açúcar e o sal até clarear. Junte o amido e bata até ficar liso, sem grumos.'});
-      L.push({t:'Junte os líquidos frios',p:'Junte o leite frio aos poucos, mexendo, e depois o suco de laranja. Passe para a panela com as tiras de casca.'});
+      L.push({t:'Prepare as gemas',p:'Bata as gemas com o açúcar e o sal até clarear. Junte os dois amidos e bata até ficar liso, sem grumos.'});
+      L.push({t:'Junte os líquidos frios',p:'Junte o leite e o creme de leite frios aos poucos, mexendo, e depois o suco de laranja. Passe para a panela com as tiras de casca.'});
     }else{
-      L.push({t:'Prepare as gemas',p:'Bata as gemas com o açúcar e o sal até clarear. Junte o amido e bata até ficar liso, sem grumos.'});
-      L.push({t:'Tempere',p:'Despeje cerca de ⅓ do leite quente sobre as gemas, em fio, sem parar de mexer. Isso evita que as gemas talhem.'});
+      L.push({t:'Prepare as gemas',p:'Bata as gemas com o açúcar e o sal até clarear. Junte os dois amidos e bata até ficar liso, sem grumos.'});
+      L.push({t:'Tempere',p:'Despeje cerca de ⅓ do líquido quente sobre as gemas, em fio, sem parar de mexer. Isso evita que as gemas talhem.'});
     }
-    L.push({t:'Cozinhe',d:'fervura + 1 min',tm:60,p:(f.heat==='cold'?'Leve ao fogo médio':'Volte tudo para a panela em fogo médio')+', mexendo sem parar com o fouet, inclusive nos cantos. '+(f.zaba?'Quando começar a engrossar, junte o Marsala aos poucos, sem parar de mexer. ':'')+'Quando engrossar e soltar as primeiras bolhas, cozinhe mais 1 minuto. Sem isso, o creme afina na geladeira.'});
+    L.push({t:'Cozinhe',d:'fervura + 1 min',tm:60,p:(f.heat==='cold'?'Leve ao fogo médio':'Volte tudo para a panela em fogo médio')+', mexendo sem parar com o fouet, inclusive nos cantos. '+(f.zaba?'Quando começar a engrossar, junte o Marsala aos poucos, sem parar de mexer. ':'')+'Quando engrossar e soltar as primeiras bolhas (82 a 85 °C), mexa com força por mais 1 minuto. Menos que isso, o amido não firma e o creme solta líquido na geladeira. Muito mais, e as gemas pegam gosto de ovo.'});
     if(f.post)L.push({t:f.heat==='cold'?'Tire a casca':'Finalize no fogo desligado',p:f.post});
-    L.push({t:'Esfrie',d:'mín. 4 h',p:'Passe para uma travessa rasa e cubra com filme encostado na superfície, para não formar película. Leve à geladeira depois de amornar.'});
+    L.push({t:'Esfrie rápido',d:'mín. 4 h',p:'Espalhe numa travessa fria e rasa, mexendo até baixar para uns 60 °C. Cubra com filme encostado na superfície, para não formar película, e leve à geladeira. Esfriar rápido deixa o creme mais liso e seguro.'});
     return [{h:'Na véspera, ou 4 h antes',ph:1,list:L},
             {h:'Na hora',ph:3,list:[{t:'Bata antes de usar',d:'30 s',p:'Gelado, o creme fica em bloco. Bata com fouet ou batedeira até ficar liso e brilhante.'}],
              note:'<b>Grumos?</b> Passe o creme por uma peneira ainda quente, antes de cobrir.'}];
@@ -790,8 +803,8 @@ var DIAGRAM='<div class="diagram"><svg viewBox="0 0 600 190" aria-label="Disco, 
  '<g transform="translate(500 95) rotate(-12)"><rect x="-84" y="-10" width="168" height="20" rx="4" fill="var(--surface-2)" stroke="var(--muted)" stroke-width="1.2"/><path d="M-58 -26C-30 -30 30 -30 58 -26L58 26C30 30 -30 30 -58 26Z" fill="var(--p2s)" stroke="var(--p2)" stroke-width="1.5"/><path d="M-40 -27C-14 -6 14 6 40 27" fill="none" stroke="var(--warn)" stroke-width="5" stroke-linecap="round"/></g>'+
  '<text x="500" y="176" text-anchor="middle" font-family="Figtree,sans-serif" font-size="13" font-weight="700" fill="var(--warn)">clara só na emenda</text></svg></div>';
 
-function recipeTabs(){var L=fills();if(L.indexOf(S.recipe)<0)S.recipe='casca';
-  $('seg-recipe').innerHTML='<button type="button" data-v="casca" aria-pressed="'+(S.recipe==='casca')+'">Casca</button>'+L.map(function(id){return '<button type="button" data-v="'+id+'" aria-pressed="'+(S.recipe===id)+'">'+F[id].short+'</button>'}).join('')}
+function recipeTabs(){if(S.recipe!=='recheio')S.recipe='casca';
+  $('seg-recipe').innerHTML='<button type="button" data-v="casca" aria-pressed="'+(S.recipe==='casca')+'">Casca</button><button type="button" data-v="recheio" aria-pressed="'+(S.recipe==='recheio')+'">Recheio</button>'}
 function renderRecipe(){
   recipeTabs();
   var k=S.recipe,h='';
@@ -803,15 +816,20 @@ function renderRecipe(){
     h+='<div class="sec"><div class="ing-head"><h3 class="h3">Ingredientes</h3><span class="eyebrow">'+shells()+' cascas</span></div><div class="card list">'+ingRows(cascaIng())+'</div>'+(shells()>S.n?'<p class="small-note">A massa não fica boa em lote menor que 12 cascas. As que sobrarem duram 5 dias no pote.</p>':'')+'</div>';
     h+=stagesHTML('casca',CASCA);
   }else{
-    var f=F[k],c=countOf(k);
-    $('r-eyebrow').textContent='Recheio · '+f.tag;
-    $('r-title').textContent=f.name;
-    h+='<div class="sec"><div class="ing-head"><h3 class="h3">Ingredientes</h3><span class="eyebrow">'+Math.max(6,c)+' cannoli</span></div><div class="card list">'+ingRows(fillIng(k))+'</div>'+(c<6?'<p class="small-note">Menos de 6 não sai bem. O que sobrar dura 2 dias na geladeira.</p>':'')+'</div>';
-    if(f.note)h+='<p class="note">'+f.note+'</p>';
-    h+=stagesHTML(k,stagesFor(k));
-    if(fam(k)==='ricota')h+='<div class="sec"><h3 class="h3">Ponto do recheio</h3><div class="ponto"><div><b>Textura</b>Liso, sem grãos entre os dedos.</div><div><b>Firmeza</b>Fica em pé na colher, sem soltar soro.</div><div><b>Doce</b>Prove gelado: o frio diminui o doce.</div></div></div>';
+    var L=fills();
+    $('r-eyebrow').textContent=L.length>1?'Receitas · 2 recheios':'Recheio · '+F[L[0]].tag;
+    $('r-title').textContent=L.length>1?'Recheios':F[L[0]].name;
+    if(L.length>1)h+='<div class="jump">'+L.map(function(id,i){return '<a href="#" data-jump="'+id+'"><span class="badge">'+(i+1)+'</span>'+F[id].name+'</a>'}).join('')+'</div>';
+    L.forEach(function(id,i){var f=F[id],c=countOf(id);
+      if(L.length>1)h+='<div class="fill-h" id="r-'+id+'"><span class="badge">'+(i+1)+'</span><div><small>'+f.tag+'</small><h3>'+f.name+'</h3></div></div>';
+      h+='<div class="sec"><div class="ing-head"><h3 class="h3">Ingredientes</h3><span class="eyebrow">'+Math.max(6,c)+' cannoli</span></div><div class="card list">'+ingRows(fillIng(id))+'</div>'+(c<6?'<p class="small-note">Menos de 6 não sai bem. O que sobrar dura 2 dias na geladeira.</p>':'')+'</div>';
+      if(f.note)h+='<p class="note">'+f.note+'</p>';
+      if(fam(id)==='creme')h+='<p class="note tip"><b>Creme de confeitaria:</b> leite com creme de leite, bastante gema e pouco amido, metade de milho e metade de arroz. É a proporção das confeitarias italianas. Detalhes no Guia.</p>';
+      h+=stagesHTML(id,stagesFor(id));
+      if(fam(id)==='ricota')h+='<div class="sec"><h3 class="h3">Ponto do recheio</h3><div class="ponto"><div><b>Textura</b>Liso, sem grãos entre os dedos.</div><div><b>Firmeza</b>Fica em pé na colher, sem soltar soro.</div><div><b>Doce</b>Prove gelado: o frio diminui o doce.</div></div></div>';
+    });
   }
-  h+='<button type="button" class="chip" data-reset="'+k+'" style="align-self:flex-start;padding:8px 14px">Desmarcar passos desta receita</button>';
+  h+='<button type="button" class="chip" data-reset="'+(k==='casca'?'casca':fills().join(','))+'" style="align-self:flex-start;padding:8px 14px">Desmarcar passos desta receita</button>';
   $('recipe').innerHTML=h;
 }
 function renderMont(){
@@ -867,7 +885,7 @@ $('shop-reset').onclick=function(){S.shop={};renderShop();save()};
 
 document.addEventListener('click',function(e){
   var t=e.target.closest('[data-go]');
-  if(t){var g=t.dataset.go;if(g==='montagem')go('montagem');else{S.recipe=g;save();go('receitas')}return}
+  if(t){var g=t.dataset.go;if(g==='montagem')go('montagem');else{S.recipe=g==='casca'?'casca':'recheio';save();go('receitas');if(g!=='casca'&&fills().length>1)setTimeout(function(){var el=$('r-'+g);if(el)window.scrollTo({top:el.getBoundingClientRect().top+window.scrollY-130})},60)}return}
   t=e.target.closest('[data-pick]');if(t){var id=t.dataset.pick,L=fills().slice(),i=L.indexOf(id);
     if(i>-1){if(L.length>1){L.splice(i,1);S.split=null}}else if(L.length<2){L.push(id);S.split=null}
     S.fills=L;all();return}
@@ -878,11 +896,18 @@ document.addEventListener('click',function(e){
   t=e.target.closest('[data-step]');if(t){var k=t.dataset.step;S.steps[k]=!S.steps[k];if(!S.steps[k])delete S.steps[k];
     var st=t.closest('.step'),dn=!!S.steps[k];st.dataset.done=dn;t.setAttribute('aria-pressed',dn);t.firstChild.textContent=dn?'✓':String(Array.prototype.indexOf.call(st.parentNode.querySelectorAll('.step'),st)+1);save();return}
   t=e.target.closest('[data-timer]');if(t){startTimer(+t.dataset.timer,t.dataset.label);return}
-  t=e.target.closest('[data-reset]');if(t){var p=t.dataset.reset+':';Object.keys(S.steps).forEach(function(k){if(k.indexOf(p)===0)delete S.steps[k]});renderRecipe();save();return}
+  t=e.target.closest('[data-reset]');if(t){t.dataset.reset.split(',').forEach(function(p){p+=':';Object.keys(S.steps).forEach(function(k){if(k.indexOf(p)===0)delete S.steps[k]})});renderRecipe();save();return}
+  t=e.target.closest('[data-jump]');if(t){e.preventDefault();var el=$('r-'+t.dataset.jump);if(el)window.scrollTo({top:el.getBoundingClientRect().top+window.scrollY-130,behavior:'smooth'});return}
 });
 document.addEventListener('keydown',function(e){if((e.key===' '||e.key==='Enter')&&e.target.matches('[data-shop]')){e.preventDefault();e.target.click()}});
 
 var HELP=[
+ {h:'Creme de confeitaria de qualidade',b:'<p>Crema pasticcera leva amido por definição: é ele que deixa o creme firme o bastante para rechear. Só com ovos e creme de leite, sem amido, o resultado é um creme inglês (líquido, para calda) ou um creme assado, como o crème brûlée. Nenhum dos dois para dentro de um cannolo.</p><p>O que separa o creme de confeitaria fina do creme caseiro é a proporção:</p><div class="kv">'+[
+  ['Líquido','Só leite','Leite com cerca de 20% de creme de leite fresco'],
+  ['Gemas','4 por 500 ml','6 por 400 ml, cerca de 110 g'],
+  ['Amido','45 g de amido de milho','28 g, metade de milho e metade de arroz'],
+  ['Baunilha','Essência','Fava raspada ou extrato puro'],
+  ['Resfriamento','Na bancada','Rápido, em travessa fria, com filme na superfície']].map(function(r){return '<div><b>'+r[0]+'</b><div class="cols"><div><em>Caseiro comum</em><p>'+r[1]+'</p></div><div><em>Este app</em><p>'+r[2]+'</p></div></div></div>'}).join('')+'</div><p>A farinha de trigo, usada nas receitas antigas, deixa o creme pesado e com textura de grão. O amido de milho firma mais. O de arroz deixa sedoso. Por isso as confeitarias misturam os dois.</p>'},
  {h:'O tradicional e o que este guia usa',b:'<p>O cannolo de Palermo leva ricota de ovelha adoçada, com chocolate e laranja cristalizada. Os recheios de creme e os modernos existem na Itália e fora dela, mas são variações.</p><div class="kv">'+[
   ['Ricota','De ovelha','De ovelha, se achar. Senão, de vaca, bem escorrida e peneirada'],
   ['Vinho da massa','Marsala','Vinho branco seco com um pouco de vinagre'],
