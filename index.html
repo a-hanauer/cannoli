@@ -275,6 +275,23 @@ details.acc .in{padding:0 16px 16px;display:flex;flex-direction:column;gap:10px;
 
 @media (max-width:380px){.phases{grid-template-columns:1fr}.phase{flex-direction:row;align-items:baseline;gap:8px}.vars{grid-template-columns:1fr}.ponto{grid-template-columns:1fr}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+/* abas no estilo do iOS 26: cápsula de vidro flutuando sobre o conteúdo; ao rolar para baixo encolhe para uma bolinha
+   com a aba atual (script "barra de abas flutuante" no fim da página) e volta ao rolar para cima ou ao tocar nela */
+:root{--tab-h:64px;--tb-b:max(10px,calc(env(safe-area-inset-bottom,0px) - 12px))}
+.tabs{left:max(14px,env(safe-area-inset-left,0px),calc(50% - 260px));right:auto;width:min(520px,calc(100% - 28px));bottom:var(--tb-b);padding:4px;overflow:hidden;border:.5px solid color-mix(in srgb,var(--fg) 10%,transparent);border-radius:32px;background:color-mix(in srgb,var(--surface) 60%,transparent);-webkit-backdrop-filter:blur(22px) saturate(180%);backdrop-filter:blur(22px) saturate(180%);box-shadow:0 12px 32px rgba(0,0,0,.14),inset 0 1px 0 rgba(255,255,255,.35);transition:width .42s cubic-bezier(.25,.9,.3,1.05),padding .42s}
+.tabs nav{height:calc(var(--tab-h) - 8px);transition:height .42s cubic-bezier(.25,.9,.3,1.05)}
+.tabs a{border-radius:28px;gap:2px;transition:background .2s,transform .15s}
+.tabs a:active{transform:scale(.93)}
+.tabs a[aria-current="page"]{background:color-mix(in srgb,var(--fg) 8%,transparent)}
+.tabs.min{width:56px;padding:3px}
+.tabs.min nav{grid-template-columns:minmax(0,1fr);height:50px}
+.tabs.min a:not([aria-current="page"]){display:none}
+.tabs.min a{font-size:0;gap:0;background:none}
+.timerbar{bottom:calc(var(--tab-h) + var(--tb-b) + 2px)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .tabs{background:color-mix(in srgb,var(--surface) 55%,transparent);border-color:rgba(255,255,255,.12);box-shadow:0 14px 34px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.08)}:root:not([data-theme="light"]) .tabs a[aria-current="page"]{background:rgba(255,255,255,.10)}:root:not([data-theme="light"]) .tabs.min a{background:none}}
+:root[data-theme="dark"] .tabs{background:color-mix(in srgb,var(--surface) 55%,transparent);border-color:rgba(255,255,255,.12);box-shadow:0 14px 34px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.08)}
+:root[data-theme="dark"] .tabs a[aria-current="page"]{background:rgba(255,255,255,.10)}
+@media (prefers-reduced-motion: reduce){.tabs,.tabs nav,.tabs a{transition:none}}
 </style>
 </head>
 <body>
@@ -990,5 +1007,36 @@ renderHelp();all();show(location.hash.slice(1));
 })();
 </script>
 
+<script>
+/* Barra de abas flutuante, como no iOS 26: encolhe para uma bolinha com a aba atual ao rolar para baixo e volta
+   inteira ao rolar para cima, ao chegar no topo, ao trocar de aba ou ao tocar nela. */
+(function () {
+  var bar = document.querySelector('.tabs');
+  if (!bar) return;
+  var last = 0, min = false, trava = 0;
+  function poe(v) { if (v === min) return; min = v; bar.classList.toggle('min', v); }
+  function topo(e) {
+    var t = e && e.target;
+    if (t && t.nodeType === 1 && t !== document.documentElement && t !== document.body) return t.scrollTop;
+    return window.scrollY || document.documentElement.scrollTop || 0;
+  }
+  document.addEventListener('scroll', function (e) {
+    if (Date.now() < trava || bar.hidden) return;
+    var t = e && e.target;
+    if (t && t.nodeType === 1 && t.closest && t.closest('[role="dialog"], .sheet, .sheet-bg, .cook, .modal')) return;   // folhas por cima não mexem na barra
+    var y = topo(e);
+    if (y < 30) poe(false);
+    else if (y - last > 6) poe(true);
+    else if (last - y > 6) poe(false);
+    last = y;
+  }, { capture: true, passive: true });
+  // tocar na bolinha só abre a barra (não troca de aba)
+  bar.addEventListener('click', function (e) {
+    if (!min) return;
+    e.preventDefault(); e.stopPropagation(); poe(false); trava = Date.now() + 450;
+  }, true);
+  window.addEventListener('hashchange', function () { poe(false); last = 0; trava = Date.now() + 450; });
+})();
+</script>
 </body>
 </html>
