@@ -331,6 +331,10 @@ details.acc .in{padding:0 16px 16px;display:flex;flex-direction:column;gap:10px;
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .seg button[aria-pressed="true"]{background:color-mix(in srgb,var(--surface) 70%,#fff 12%)}}
 :root[data-theme="dark"] .seg button[aria-pressed="true"]{background:color-mix(in srgb,var(--surface) 70%,#fff 12%)}
 @media (prefers-reduced-motion: reduce){.portion-chip,.back,.seg button{transition:none}}
+
+/* voltar preso (iOS 26): flutua logo abaixo do topo enquanto a lista rola por baixo */
+.sec:has(> .back){padding-top:54px}
+.sec > .back{position:fixed;z-index:19;top:calc(env(safe-area-inset-top,0px) + 57px + 10px);left:max(16px,env(safe-area-inset-left,0px),calc(50% - 304px));margin:0}
 </style>
 </head>
 <body>
